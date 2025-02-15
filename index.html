@@ -47,6 +47,27 @@
             border-radius: 4px;
             cursor: pointer;
         }
+        .injection-options {
+            margin-top: 10px;
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+        .injection-button {
+            padding: 8px 16px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            cursor: pointer;
+            background-color: white;
+        }
+        .injection-button.selected {
+            background-color: #007bff;
+            color: white;
+            border-color: #0056b3;
+        }
+        #operation3Group {
+            display: none;
+        }
     </style>
 </head>
 <body>
@@ -72,23 +93,80 @@
             <input type="hidden" id="selectedEye" name="selectedEye" required>
         </div>
 
-        <div class="form-group">
-            <label for="operation">Operation:</label>
-            <select id="operation" name="operation" required>
+        <div class="form-group" id="operation1Group">
+            <label for="operation1">Operation 1:</label>
+            <select class="form-control" id="operation1" onchange="toggleInjectionOptions(1)">
                 <option value="">Select Operation</option>
-                <option value="phaco">Phaco + IOL</option>
+                <option value="phaco">Cataract</option>
                 <option value="vitrectomy">Posterior vitrectomy</option>
-                <option value="trabeculectomy">Trabeculectomy</option>
+                <option value="glaucoma">Glaucoma</option>
+                <option value="injection">Intravitreal injection</option>
             </select>
+            <div id="injectionOptions1" class="injection-options" style="display: none;">
+                <button type="button" class="injection-button" data-injection="vabysmo">Vabysmo</button>
+                <button type="button" class="injection-button" data-injection="eylea">Eylea</button>
+                <button type="button" class="injection-button" data-injection="zaltrap">Zaltrap</button>
+                <button type="button" class="injection-button" data-injection="lucentis">Lucentis</button>
+                <button type="button" class="injection-button" data-injection="beovu">Beovu</button>
+                <button type="button" class="injection-button" data-injection="ozurdex">Ozurdex</button>
+            </div>
+        </div>
+
+        <div class="form-group" id="operation2Group">
+            <label for="operation2">Operation 2:</label>
+            <select class="form-control" id="operation2" onchange="toggleInjectionOptions(2)">
+                <option value="">Select Operation</option>
+                <option value="phaco">Cataract</option>
+                <option value="vitrectomy">Posterior vitrectomy</option>
+                <option value="glaucoma">Glaucoma</option>
+                <option value="injection">Intravitreal injection</option>
+            </select>
+            <div id="injectionOptions2" class="injection-options" style="display: none;">
+                <button type="button" class="injection-button" data-injection="vabysmo">Vabysmo</button>
+                <button type="button" class="injection-button" data-injection="eylea">Eylea</button>
+                <button type="button" class="injection-button" data-injection="zaltrap">Zaltrap</button>
+                <button type="button" class="injection-button" data-injection="lucentis">Lucentis</button>
+                <button type="button" class="injection-button" data-injection="beovu">Beovu</button>
+                <button type="button" class="injection-button" data-injection="ozurdex">Ozurdex</button>
+            </div>
+        </div>
+
+        <div class="form-group" id="operation3Group">
+            <label for="operation3">Operation 3:</label>
+            <select class="form-control" id="operation3" onchange="toggleInjectionOptions(3)">
+                <option value="">Select Operation</option>
+                <option value="phaco">Cataract</option>
+                <option value="vitrectomy">Posterior vitrectomy</option>
+                <option value="glaucoma">Glaucoma</option>
+                <option value="injection">Intravitreal injection</option>
+            </select>
+            <div id="injectionOptions3" class="injection-options" style="display: none;">
+                <button type="button" class="injection-button" data-injection="vabysmo">Vabysmo</button>
+                <button type="button" class="injection-button" data-injection="eylea">Eylea</button>
+                <button type="button" class="injection-button" data-injection="zaltrap">Zaltrap</button>
+                <button type="button" class="injection-button" data-injection="lucentis">Lucentis</button>
+                <button type="button" class="injection-button" data-injection="beovu">Beovu</button>
+                <button type="button" class="injection-button" data-injection="ozurdex">Ozurdex</button>
+            </div>
         </div>
 
         <div class="form-group">
             <label for="doctor1">Primary Doctor:</label>
             <select id="doctor1" name="doctor1" required>
                 <option value="">Select Primary Doctor</option>
-                <option value="fok_andrew">Fok Andrew</option>
-                <option value="lam_douglas">Lam Douglas</option>
-                <option value="lau_winnie">Lau Winnie</option>
+                <option value="leslie_cheng">Leslie Cheng</option>
+                <option value="cheung_sek_hong">Cheung Sek Hong</option>
+                <option value="andrew_fok">Andrew Fok</option>
+                <option value="charmaine_hon">Charmaine Hon</option>
+                <option value="callie_ko">Callie Ko</option>
+                <option value="isabel_lai">Isabel Lai</option>
+                <option value="douglas_lam">Douglas Lam</option>
+                <option value="winnie_lau">Winnie Lau</option>
+                <option value="shiu_chi_yuen">Shiu Chi Yuen</option>
+                <option value="patrick_tong">Patrick Tong</option>
+                <option value="victor_woo">Victor Woo</option>
+                <option value="jean_paul_yih">Jean Paul Yih</option>
+                <option value="nancy_yuen">Nancy Yuen</option>
             </select>
         </div>
 
@@ -96,13 +174,23 @@
             <label for="doctor2">Second Doctor:</label>
             <select id="doctor2" name="doctor2" required>
                 <option value="">Select Second Doctor</option>
-                <option value="fok_andrew">Fok Andrew</option>
-                <option value="lam_douglas">Lam Douglas</option>
-                <option value="lau_winnie">Lau Winnie</option>
+                <option value="leslie_cheng">Leslie Cheng</option>
+                <option value="cheung_sek_hong">Cheung Sek Hong</option>
+                <option value="andrew_fok">Andrew Fok</option>
+                <option value="charmaine_hon">Charmaine Hon</option>
+                <option value="callie_ko">Callie Ko</option>
+                <option value="isabel_lai">Isabel Lai</option>
+                <option value="douglas_lam">Douglas Lam</option>
+                <option value="winnie_lau">Winnie Lau</option>
+                <option value="shiu_chi_yuen">Shiu Chi Yuen</option>
+                <option value="patrick_tong">Patrick Tong</option>
+                <option value="victor_woo">Victor Woo</option>
+                <option value="jean_paul_yih">Jean Paul Yih</option>
+                <option value="nancy_yuen">Nancy Yuen</option>
             </select>
         </div>
 
-        <button type="submit">Schedule Surgery</button>
+        <button type="submit">Print Consent</button>
     </form>
 
     <script>
@@ -125,6 +213,48 @@
             const data = Object.fromEntries(formData);
             console.log('Form Data:', data);
             // Add your form submission logic here
+        });
+
+        function toggleInjectionOptions(operationNumber) {
+            const select = document.getElementById(`operation${operationNumber}`);
+            const injectionOptions = document.getElementById(`injectionOptions${operationNumber}`);
+            
+            if (select.value === 'injection') {
+                injectionOptions.style.display = 'flex';
+            } else {
+                injectionOptions.style.display = 'none';
+                // Clear any selected injection when switching to different operation
+                injectionOptions.querySelectorAll('.injection-button').forEach(btn => {
+                    btn.classList.remove('selected');
+                });
+            }
+
+            // Only handle operation3 visibility based on operation2
+            if (operationNumber === 2) {
+                const operation3Group = document.getElementById('operation3Group');
+                if (select.value) {
+                    operation3Group.style.display = 'flex';
+                } else {
+                    operation3Group.style.display = 'none';
+                    // Clear operation3 values when hiding it
+                    document.getElementById('operation3').value = '';
+                    document.getElementById('injectionOptions3').style.display = 'none';
+                }
+            }
+        }
+
+        // Add click handlers for injection buttons
+        document.querySelectorAll('.injection-button').forEach(button => {
+            button.addEventListener('click', function() {
+                // Find the parent injection-options div
+                const parentOptions = this.closest('.injection-options');
+                // Remove selected class from all buttons in this group
+                parentOptions.querySelectorAll('.injection-button').forEach(btn => {
+                    btn.classList.remove('selected');
+                });
+                // Add selected class to clicked button
+                this.classList.add('selected');
+            });
         });
     </script>
 </body>
