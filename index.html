@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OA Informed Consent System</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        form {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+        .eye-selection {
+            display: flex;
+            gap: 10px;
+        }
+        .eye-button {
+            padding: 10px 20px;
+            cursor: pointer;
+        }
+        .eye-button.selected {
+            background-color: #007bff;
+            color: white;
+            border: none;
+        }
+        select, input {
+            padding: 8px;
+            border-radius: 4px;
+            border: 1px solid #ccc;
+        }
+        button[type="submit"] {
+            background-color: #28a745;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <h1>OA Informed Consent System</h1>
+    <form id="surgeryForm">
+        <div class="form-group">
+            <label for="patientName">Patient Name:</label>
+            <input type="text" id="patientName" name="patientName" required>
+        </div>
+
+        <div class="form-group">
+            <label for="patientId">Patient ID:</label>
+            <input type="text" id="patientId" name="patientId" required>
+        </div>
+
+        <div class="form-group">
+            <label>Eye Selection:</label>
+            <div class="eye-selection">
+                <button type="button" class="eye-button" data-eye="right">Right Eye</button>
+                <button type="button" class="eye-button" data-eye="left">Left Eye</button>
+                <button type="button" class="eye-button" data-eye="both">Both Eyes</button>
+            </div>
+            <input type="hidden" id="selectedEye" name="selectedEye" required>
+        </div>
+
+        <div class="form-group">
+            <label for="operation">Operation:</label>
+            <select id="operation" name="operation" required>
+                <option value="">Select Operation</option>
+                <option value="phaco">Phaco + IOL</option>
+                <option value="vitrectomy">Posterior vitrectomy</option>
+                <option value="trabeculectomy">Trabeculectomy</option>
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label for="doctor1">Primary Doctor:</label>
+            <select id="doctor1" name="doctor1" required>
+                <option value="">Select Primary Doctor</option>
+                <option value="fok_andrew">Fok Andrew</option>
+                <option value="lam_douglas">Lam Douglas</option>
+                <option value="lau_winnie">Lau Winnie</option>
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label for="doctor2">Second Doctor:</label>
+            <select id="doctor2" name="doctor2" required>
+                <option value="">Select Second Doctor</option>
+                <option value="fok_andrew">Fok Andrew</option>
+                <option value="lam_douglas">Lam Douglas</option>
+                <option value="lau_winnie">Lau Winnie</option>
+            </select>
+        </div>
+
+        <button type="submit">Schedule Surgery</button>
+    </form>
+
+    <script>
+        // Handle eye selection buttons
+        const eyeButtons = document.querySelectorAll('.eye-button');
+        const selectedEyeInput = document.getElementById('selectedEye');
+
+        eyeButtons.forEach(button => {
+            button.addEventListener('click', function() {
+                eyeButtons.forEach(btn => btn.classList.remove('selected'));
+                this.classList.add('selected');
+                selectedEyeInput.value = this.dataset.eye;
+            });
+        });
+
+        // Handle form submission
+        document.getElementById('surgeryForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const formData = new FormData(this);
+            const data = Object.fromEntries(formData);
+            console.log('Form Data:', data);
+            // Add your form submission logic here
+        });
+    </script>
+</body>
+</html>
