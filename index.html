@@ -9,7 +9,8 @@
             font-family: Arial, sans-serif;
             max-width: 800px;
             margin: 0 auto;
-            padding: 20px;
+            padding: 40px;
+            padding-top: 70px;
         }
         form {
             display: flex;
@@ -40,7 +41,7 @@
             border: 1px solid #ccc;
         }
         button[type="submit"] {
-            background-color: #28a745;
+            background-color: #00b3b3;
             color: white;
             padding: 10px 20px;
             border: none;
@@ -68,10 +69,44 @@
         #operation3Group {
             display: none;
         }
+        .top-bar {
+            background-color: #00b3b3;
+            width: 100%;
+            position: fixed;
+            top: 0;
+            left: 0;
+            z-index: 1000;
+            padding: 15px 0;
+            text-align: center;
+        }
+        .top-bar h1 {
+            margin: 0;
+            font-size: 24px;
+        }
+        .button-group {
+            display: flex;
+            gap: 10px;
+        }
+        .reset-button {
+            background-color: #808080;  /* Gray color */
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        #operation2Group {
+            display: none;
+        }
+        #doctor2Group {
+            display: none;
+        }
     </style>
 </head>
 <body>
-    <h1>OA Informed Consent System</h1>
+    <div class="top-bar">
+        <h1>OA Informed Consent System</h1>
+    </div>
     <form id="surgeryForm">
         <div class="form-group">
             <label for="patientName">Patient Name:</label>
@@ -95,7 +130,7 @@
 
         <div class="form-group" id="operation1Group">
             <label for="operation1">Operation 1:</label>
-            <select class="form-control" id="operation1" onchange="toggleInjectionOptions(1)">
+            <select class="form-control" id="operation1" name="operation1" required onchange="toggleInjectionOptions(1)">
                 <option value="">Select Operation</option>
                 <option value="phaco">Cataract</option>
                 <option value="vitrectomy">Posterior vitrectomy</option>
@@ -152,7 +187,7 @@
 
         <div class="form-group">
             <label for="doctor1">Primary Doctor:</label>
-            <select id="doctor1" name="doctor1" required>
+            <select id="doctor1" name="doctor1" onchange="toggleSecondDoctor()">
                 <option value="">Select Primary Doctor</option>
                 <option value="leslie_cheng">Leslie Cheng</option>
                 <option value="cheung_sek_hong">Cheung Sek Hong</option>
@@ -170,9 +205,9 @@
             </select>
         </div>
 
-        <div class="form-group">
+        <div class="form-group" id="doctor2Group">
             <label for="doctor2">Second Doctor:</label>
-            <select id="doctor2" name="doctor2" required>
+            <select id="doctor2" name="doctor2">
                 <option value="">Select Second Doctor</option>
                 <option value="leslie_cheng">Leslie Cheng</option>
                 <option value="cheung_sek_hong">Cheung Sek Hong</option>
@@ -190,7 +225,10 @@
             </select>
         </div>
 
-        <button type="submit">Print Consent</button>
+        <div class="button-group">
+            <button type="submit">Print Consent</button>
+            <button type="button" class="reset-button" onclick="resetForm()">Reset Form</button>
+        </div>
     </form>
 
     <script>
@@ -223,20 +261,34 @@
                 injectionOptions.style.display = 'flex';
             } else {
                 injectionOptions.style.display = 'none';
-                // Clear any selected injection when switching to different operation
                 injectionOptions.querySelectorAll('.injection-button').forEach(btn => {
                     btn.classList.remove('selected');
                 });
             }
 
-            // Only handle operation3 visibility based on operation2
+            // Show/hide operation2 based on operation1
+            if (operationNumber === 1) {
+                const operation2Group = document.getElementById('operation2Group');
+                if (select.value) {
+                    operation2Group.style.display = 'flex';
+                } else {
+                    operation2Group.style.display = 'none';
+                    // Clear operation2 and operation3 values when hiding operation2
+                    document.getElementById('operation2').value = '';
+                    document.getElementById('operation3').value = '';
+                    document.getElementById('injectionOptions2').style.display = 'none';
+                    document.getElementById('injectionOptions3').style.display = 'none';
+                    document.getElementById('operation3Group').style.display = 'none';
+                }
+            }
+
+            // Show/hide operation3 based on operation2 (keep existing logic)
             if (operationNumber === 2) {
                 const operation3Group = document.getElementById('operation3Group');
                 if (select.value) {
                     operation3Group.style.display = 'flex';
                 } else {
                     operation3Group.style.display = 'none';
-                    // Clear operation3 values when hiding it
                     document.getElementById('operation3').value = '';
                     document.getElementById('injectionOptions3').style.display = 'none';
                 }
@@ -256,6 +308,42 @@
                 this.classList.add('selected');
             });
         });
+
+        function toggleSecondDoctor() {
+            const doctor1 = document.getElementById('doctor1');
+            const doctor2Group = document.getElementById('doctor2Group');
+            
+            if (doctor1.value) {
+                doctor2Group.style.display = 'flex';
+            } else {
+                doctor2Group.style.display = 'none';
+                document.getElementById('doctor2').value = '';
+            }
+        }
+
+        function resetForm() {
+            // Reset form fields
+            document.getElementById('surgeryForm').reset();
+            
+            // Reset eye selection buttons
+            eyeButtons.forEach(btn => btn.classList.remove('selected'));
+            selectedEyeInput.value = '';
+            
+            // Reset injection options
+            document.querySelectorAll('.injection-options').forEach(div => {
+                div.style.display = 'none';
+                div.querySelectorAll('.injection-button').forEach(btn => {
+                    btn.classList.remove('selected');
+                });
+            });
+            
+            // Hide operation2 and operation3
+            document.getElementById('operation2Group').style.display = 'none';
+            document.getElementById('operation3Group').style.display = 'none';
+            
+            // Hide doctor2
+            document.getElementById('doctor2Group').style.display = 'none';
+        }
     </script>
 </body>
 </html>
