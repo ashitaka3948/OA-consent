@@ -101,13 +101,63 @@
         #doctor2Group {
             display: none;
         }
+        /* Add these calendar styles */
+        .calendar {
+            width: 280px;
+            background: white;
+            border: 1px solid #ddd;
+            padding: 10px;
+            border-radius: 4px;
+        }
+
+        .calendar-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        .calendar-grid {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 5px;
+            text-align: center;
+        }
+
+        .calendar-day {
+            padding: 5px;
+            cursor: pointer;
+            border-radius: 4px;
+        }
+
+        .calendar-day:hover {
+            background-color: #f0f0f0;
+        }
+
+        .calendar-day.today {
+            background-color: #e6f3ff;
+        }
+
+        .calendar-day.selected {
+            background-color: #00b3b3;
+            color: white;
+        }
+
+        .calendar-day.other-month {
+            color: #ccc;
+        }
+
+        .weekday-header {
+            font-weight: bold;
+            color: #666;
+        }
     </style>
 </head>
 <body>
     <div class="top-bar">
         <h1>OA Informed Consent System</h1>
     </div>
-    <form id="surgeryForm">
+    <form id="surgeryForm" method="POST">
         <div class="form-group">
             <label for="patientName">Patient Name:</label>
             <input type="text" id="patientName" name="patientName" required>
@@ -119,11 +169,32 @@
         </div>
 
         <div class="form-group">
+            <label for="selectedDate">Operation Date:</label>
+            <div class="calendar" id="calendar">
+                <div class="calendar-header">
+                    <button type="button" onclick="previousMonth()">&lt;</button>
+                    <span id="currentMonth"></span>
+                    <button type="button" onclick="nextMonth()">&gt;</button>
+                </div>
+                <div class="calendar-grid" id="calendarGrid">
+                    <div class="weekday-header">Su</div>
+                    <div class="weekday-header">Mo</div>
+                    <div class="weekday-header">Tu</div>
+                    <div class="weekday-header">We</div>
+                    <div class="weekday-header">Th</div>
+                    <div class="weekday-header">Fr</div>
+                    <div class="weekday-header">Sa</div>
+                </div>
+            </div>
+            <input type="hidden" id="selectedDate" name="selectedDate" required>
+        </div>
+
+        <div class="form-group">
             <label>Eye Selection:</label>
             <div class="eye-selection">
-                <button type="button" class="eye-button" data-eye="right">Right Eye</button>
-                <button type="button" class="eye-button" data-eye="left">Left Eye</button>
-                <button type="button" class="eye-button" data-eye="both">Both Eyes</button>
+                <button type="button" class="eye-button" data-eye="right eye">Right Eye</button>
+                <button type="button" class="eye-button" data-eye="left eye">Left Eye</button>
+                <button type="button" class="eye-button" data-eye="both eyes">Both Eyes</button>
             </div>
             <input type="hidden" id="selectedEye" name="selectedEye" required>
         </div>
@@ -135,6 +206,7 @@
                 <option value="phaco">Cataract</option>
                 <option value="vitrectomy">Posterior vitrectomy</option>
                 <option value="glaucoma">Glaucoma</option>
+                <option value="sfiol">SFIOL</option>
                 <option value="injection">Intravitreal injection</option>
             </select>
             <div id="injectionOptions1" class="injection-options" style="display: none;">
@@ -154,6 +226,7 @@
                 <option value="phaco">Cataract</option>
                 <option value="vitrectomy">Posterior vitrectomy</option>
                 <option value="glaucoma">Glaucoma</option>
+                <option value="sfiol">SFIOL</option>
                 <option value="injection">Intravitreal injection</option>
             </select>
             <div id="injectionOptions2" class="injection-options" style="display: none;">
@@ -173,6 +246,7 @@
                 <option value="phaco">Cataract</option>
                 <option value="vitrectomy">Posterior vitrectomy</option>
                 <option value="glaucoma">Glaucoma</option>
+                <option value="sfiol">SFIOL</option>
                 <option value="injection">Intravitreal injection</option>
             </select>
             <div id="injectionOptions3" class="injection-options" style="display: none;">
@@ -241,6 +315,86 @@
     </form>
 
     <script>
+        let currentDate = new Date();
+        let selectedDate = new Date(currentDate);
+        selectedDate.setDate(selectedDate.getDate() + 1); // Set default to tomorrow
+
+        function updateCalendar() {
+            const grid = document.getElementById('calendarGrid');
+            const monthDisplay = document.getElementById('currentMonth');
+            
+            // Clear existing days
+            while (grid.children.length > 7) { // Keep weekday headers
+                grid.removeChild(grid.lastChild);
+            }
+            
+            // Update month display
+            monthDisplay.textContent = currentDate.toLocaleString('default', { 
+                month: 'long', 
+                year: 'numeric' 
+            });
+            
+            // Get first day of month
+            const firstDay = new Date(currentDate.getFullYear(), currentDate.getMonth(), 1);
+            const lastDay = new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 0);
+            
+            // Add padding days from previous month
+            const padding = firstDay.getDay();
+            const prevMonth = new Date(currentDate);
+            prevMonth.setMonth(prevMonth.getMonth() - 1);
+            const prevMonthLastDay = new Date(prevMonth.getFullYear(), prevMonth.getMonth() + 1, 0);
+            
+            for (let i = padding - 1; i >= 0; i--) {
+                const dayDiv = document.createElement('div');
+                dayDiv.className = 'calendar-day other-month';
+                dayDiv.textContent = prevMonthLastDay.getDate() - i;
+                grid.appendChild(dayDiv);
+            }
+            
+            // Add days of current month
+            const today = new Date();
+            for (let i = 1; i <= lastDay.getDate(); i++) {
+                const dayDiv = document.createElement('div');
+                dayDiv.className = 'calendar-day';
+                dayDiv.textContent = i;
+                
+                const currentDay = new Date(currentDate.getFullYear(), currentDate.getMonth(), i);
+                
+                if (currentDay.toDateString() === today.toDateString()) {
+                    dayDiv.classList.add('today');
+                }
+                if (currentDay.toDateString() === selectedDate.toDateString()) {
+                    dayDiv.classList.add('selected');
+                }
+                
+                dayDiv.addEventListener('click', () => {
+                    document.querySelectorAll('.calendar-day.selected').forEach(el => {
+                        el.classList.remove('selected');
+                    });
+                    dayDiv.classList.add('selected');
+                    selectedDate = currentDay;
+                    document.getElementById('selectedDate').value = selectedDate.toISOString().split('T')[0];
+                });
+                
+                grid.appendChild(dayDiv);
+            }
+        }
+
+        function previousMonth() {
+            currentDate.setMonth(currentDate.getMonth() - 1);
+            updateCalendar();
+        }
+
+        function nextMonth() {
+            currentDate.setMonth(currentDate.getMonth() + 1);
+            updateCalendar();
+        }
+
+        // Initialize calendar
+        updateCalendar();
+        // Set initial selected date (tomorrow)
+        document.getElementById('selectedDate').value = selectedDate.toISOString().split('T')[0];
+
         // Handle eye selection buttons
         const eyeButtons = document.querySelectorAll('.eye-button');
         const selectedEyeInput = document.getElementById('selectedEye');
@@ -253,13 +407,46 @@
             });
         });
 
-        // Handle form submission
+        // Update the form submission handler
         document.getElementById('surgeryForm').addEventListener('submit', function(e) {
             e.preventDefault();
+            
             const formData = new FormData(this);
-            const data = Object.fromEntries(formData);
-            console.log('Form Data:', data);
-            // Add your form submission logic here
+            const submitButton = e.submitter;
+            const action = submitButton.getAttribute('formaction');
+            
+            fetch(action, {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                return response.blob();
+            })
+            .then(blob => {
+                const url = window.URL.createObjectURL(blob);
+                
+                // Open PDF in a new window
+                const newWindow = window.open(url, '_blank');
+                
+                // Wait for the new window to load
+                setTimeout(() => {
+                    if (newWindow) {
+                        newWindow.print();
+                    }
+                }, 2000); // 2 second delay
+                
+                // Clean up
+                setTimeout(() => {
+                    window.URL.revokeObjectURL(url);
+                }, 5000);
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('Error generating consent form. Please try again.');
+            });
         });
 
         function toggleInjectionOptions(operationNumber) {
