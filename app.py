@@ -40,72 +40,92 @@ TEMPLATES = {
 # Add this doctor name mapping at the top of the file
 DOCTOR_NAMES = {
     'leslie_cheng': {
-        'english': 'Leslie Cheng',
-        'chinese': '鄭志釗'
+        'english': 'CHENG LESLIE KA-LOK',
+        'chinese': '鄭家樂'
     },
     'cheung_sek_hong': {
-        'english': 'Cheung Sek Hong',
+        'english': 'CHEUNG SEK HONG',
         'chinese': '張錫康'
     },
     'andrew_fok': {
-        'english': 'Andrew Fok',
-        'chinese': '霍經昌'
+        'english': 'FOK CHUNG TIN ANDREW',
+        'chinese': '霍頌天'
     },
     'charmaine_hon': {
-        'english': 'Charmaine Hon',
-        'chinese': '韓慶璋'
+        'english': 'HON CHARMAINE',
+        'chinese': '韓尚穎'
     },
     'callie_ko': {
-        'english': 'Callie Ko',
-        'chinese': '高天藍'
+        'english': 'KO KA LI CALLIE',
+        'chinese': '高嘉莉'
     },
     'isabel_lai': {
-        'english': 'Isabel Lai',
-        'chinese': '黎珮瑤'
+        'english': 'LAI SUM WAI ISABEL',
+        'chinese': '黎心慧'
     },
     'douglas_lam': {
-        'english': 'Douglas Lam',
-        'chinese': '林偉聰'
+        'english': 'LAM KING TAK DOUGLAS',
+        'chinese': '林敬德'
     },
     'winnie_lau': {
-        'english': 'Winnie Lau',
-        'chinese': '劉芷欣'
+        'english': 'LAU WAI YING WINNIE',
+        'chinese': '劉韋形'
     },
     'gary_lee': {
-        'english': 'Gary Lee',
-        'chinese': '李傑'
+        'english': 'LEE KA YAU',
+        'chinese': '李嘉祐'
     },
     'alex_ng': {
-        'english': 'Alex Ng',
-        'chinese': '吳國強'
+        'english': 'NG LAP KI',
+        'chinese': '伍立祺'
     },
     'shiu_chi_yuen': {
-        'english': 'Shiu Chi Yuen',
-        'chinese': '邵志源'
+        'english': 'SHIU CHI YUEN',
+        'chinese': '邵志遠'
     },
     'patrick_tong': {
-        'english': 'Patrick Tong',
-        'chinese': '唐俊業'
+        'english': 'TONG PAK CHUEN',
+        'chinese': '唐柏泉'
     },
     'donald_woo': {
-        'english': 'Donald Woo',
-        'chinese': '胡子傑'
+        'english': 'WOO CHAI FONG DONALD',
+        'chinese': '賀澤烽'
     },
     'victor_woo': {
-        'english': 'Victor Woo',
-        'chinese': '胡釗明'
+        'english': 'WOO CHI PANG CLEOPHAS',
+        'chinese': '胡志鵬'
     },
     'jean_paul_yih': {
-        'english': 'Jean Paul Yih',
-        'chinese': '葉霖'
+        'english': 'YIH JEAN-PAUL LAI BONG',
+        'chinese': '葉禮邦'
     },
     'nancy_yuen': {
-        'english': 'Nancy Yuen',
-        'chinese': '袁淑欣'
+        'english': 'YUEN SHI YIN',
+        'chinese': '袁淑賢'
     },
     'carol_yu': {
-        'english': 'Carol Yu',
-        'chinese': '余詠欣'
+        'english': 'YU SHAN CAROL',
+        'chinese': '余珊'
+    }
+}
+
+# Add coordinate mappings for both languages
+FIELD_COORDINATES = {
+    'english': {
+        'patient_name': (50, 701),
+        'patient_id': (100, 650),
+        'eye': (50, 688),
+        'doctor1': (160, 673),
+        'doctor2': (100, 500),
+        'operation_date': (50, 715),
+    },
+    'chinese': {
+        'patient_name': (72, 723),  # Different coordinates for Chinese
+        'patient_id': (200, 650),
+        'eye': (150, 688),
+        'doctor1': (400, 723),
+        'doctor2': (200, 500),
+        'operation_date': (723, 500),
     }
 }
 
@@ -115,25 +135,16 @@ def fill_pdf_template(template_path, form_data, language='english'):
     
     # Set font based on language
     if language == 'chinese':
-        can.setFont('MSung', 12)  # Use Chinese font for Chinese consent
+        can.setFont('MSung', 12)
     else:
-        can.setFont('Helvetica', 12)  # Use default font for English
+        can.setFont('Helvetica', 12)
     
     # Get template dimensions
     template = PdfReader(open(template_path, 'rb'))
     page = template.pages[0]
     
-    # Define coordinates for each field in the template
-    # These would need to be adjusted based on your actual templates
-    field_coordinates = {
-        'patient_name': (50, 701),  # x, y coordinates
-        'patient_id': (100, 650),
-        'eye': (50, 688),
-        'doctor1': (160, 673),
-        'doctor2': (100, 500),
-        'operation_date': (50, 715),  # Add this line with appropriate coordinates
-        # Add more fields and their coordinates as needed
-    }
+    # Use the appropriate coordinate set based on language
+    field_coordinates = FIELD_COORDINATES[language]
     
     # Fill in the fields
     for field, coords in field_coordinates.items():
@@ -141,18 +152,14 @@ def fill_pdf_template(template_path, form_data, language='english'):
             can.drawString(coords[0], coords[1], str(form_data[field]))
     
     can.save()
-    
-    # Move to the beginning of the buffer
     packet.seek(0)
     new_pdf = PdfReader(packet)
     
-    # Merge with template
     output = PdfWriter()
     page = template.pages[0]
     page.merge_page(new_pdf.pages[0])
     output.add_page(page)
     
-    # Save to a temporary buffer
     output_buffer = BytesIO()
     output.write(output_buffer)
     output_buffer.seek(0)
