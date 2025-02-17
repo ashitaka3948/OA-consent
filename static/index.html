@@ -428,15 +428,8 @@
             .then(blob => {
                 const url = window.URL.createObjectURL(blob);
                 
-                // Open PDF in a new window
-                const newWindow = window.open(url, '_blank');
-                
-                // Wait for the new window to load
-                setTimeout(() => {
-                    if (newWindow) {
-                        newWindow.print();
-                    }
-                }, 2000); // 2 second delay
+                // Open PDF in a new window without printing
+                window.open(url, '_blank');
                 
                 // Clean up
                 setTimeout(() => {

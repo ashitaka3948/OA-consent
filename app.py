@@ -109,7 +109,7 @@ DOCTOR_NAMES = {
     }
 }
 
-# Add coordinate mappings for both languages
+# Update the coordinates for operation_date in both languages
 FIELD_COORDINATES = {
     'english': {
         'patient_name': (50, 701),
@@ -117,15 +117,15 @@ FIELD_COORDINATES = {
         'eye': (50, 688),
         'doctor1': (160, 673),
         'doctor2': (100, 500),
-        'operation_date': (50, 715),
+        'operation_date': (200, 723),  # Adjusted coordinates for operation date
     },
     'chinese': {
-        'patient_name': (72, 723),  # Different coordinates for Chinese
+        'patient_name': (72, 723),
         'patient_id': (200, 650),
         'eye': (150, 688),
         'doctor1': (400, 723),
         'doctor2': (200, 500),
-        'operation_date': (723, 500),
+        'operation_date': (400, 118),  # Adjusted coordinates for operation date
     }
 }
 
@@ -181,13 +181,18 @@ def generate_english_consent():
     doctor1_name = DOCTOR_NAMES[doctor1_id]['english'] if doctor1_id else ''
     doctor2_name = DOCTOR_NAMES[doctor2_id]['english'] if doctor2_id else ''
     
+    # Format the date to DD/MM/YYYY
+    operation_date = request.form.get('selectedDate')  # Comes in as YYYY-MM-DD
+    date_parts = operation_date.split('-')
+    formatted_date = f"{date_parts[2]}/{date_parts[1]}/{date_parts[0]}"  # Convert to DD/MM/YYYY
+    
     form_data = {
         'patient_name': request.form.get('patientName'),
         'patient_id': request.form.get('patientId'),
         'eye': request.form.get('selectedEye'),
         'doctor1': doctor1_name,
         'doctor2': doctor2_name,
-        'operation_date': request.form.get('selectedDate'),
+        'operation_date': formatted_date,
     }
     
     pdf_buffer = fill_pdf_template(template_path, form_data, 'english')
@@ -208,13 +213,18 @@ def generate_chinese_consent():
     doctor1_name = DOCTOR_NAMES[doctor1_id]['chinese'] if doctor1_id else ''
     doctor2_name = DOCTOR_NAMES[doctor2_id]['chinese'] if doctor2_id else ''
     
+    # Format the date to DD/MM/YYYY
+    operation_date = request.form.get('selectedDate')  # Comes in as YYYY-MM-DD
+    date_parts = operation_date.split('-')
+    formatted_date = f"{date_parts[2]}/{date_parts[1]}/{date_parts[0]}"  # Convert to DD/MM/YYYY
+    
     form_data = {
         'patient_name': request.form.get('patientName'),
         'patient_id': request.form.get('patientId'),
         'eye': request.form.get('selectedEye'),
         'doctor1': doctor1_name,
         'doctor2': doctor2_name,
-        'operation_date': request.form.get('selectedDate'),
+        'operation_date': formatted_date,
     }
     
     pdf_buffer = fill_pdf_template(template_path, form_data, 'chinese')
