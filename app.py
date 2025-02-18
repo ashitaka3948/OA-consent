@@ -139,14 +139,11 @@ def fill_pdf_template(template_path, form_data, language='english'):
     else:
         can.setFont('Helvetica', 12)
     
-    # Get template dimensions
+    # Get template
     template = PdfReader(open(template_path, 'rb'))
-    page = template.pages[0]
     
-    # Use the appropriate coordinate set based on language
+    # Fill in the fields (only on first page)
     field_coordinates = FIELD_COORDINATES[language]
-    
-    # Fill in the fields
     for field, coords in field_coordinates.items():
         if field in form_data:
             can.drawString(coords[0], coords[1], str(form_data[field]))
@@ -156,9 +153,14 @@ def fill_pdf_template(template_path, form_data, language='english'):
     new_pdf = PdfReader(packet)
     
     output = PdfWriter()
-    page = template.pages[0]
-    page.merge_page(new_pdf.pages[0])
-    output.add_page(page)
+    
+    # Process all pages from the template
+    for page_num in range(len(template.pages)):
+        page = template.pages[page_num]
+        # Only merge the form data with the first page
+        if page_num == 0:
+            page.merge_page(new_pdf.pages[0])
+        output.add_page(page)
     
     output_buffer = BytesIO()
     output.write(output_buffer)
