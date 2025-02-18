@@ -151,6 +151,27 @@
             font-weight: bold;
             color: #666;
         }
+
+        .operation-header, .doctor-header {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .add-button {
+            width: 24px;
+            height: 24px;
+            border-radius: 12px;
+            background-color: #00b3b3;
+            color: white;
+            border: none;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 16px;
+            padding: 0;
+        }
     </style>
 </head>
 <body>
@@ -200,7 +221,10 @@
         </div>
 
         <div class="form-group" id="operation1Group">
-            <label for="operation1">Operation 1:</label>
+            <div class="operation-header">
+                <label for="operation1">Operation 1:</label>
+                <button type="button" class="add-button" onclick="showOperation2()">+</button>
+            </div>
             <select class="form-control" id="operation1" name="operation1" required onchange="toggleInjectionOptions(1)">
                 <option value="">Select Operation</option>
                 <option value="phaco">Cataract</option>
@@ -220,7 +244,10 @@
         </div>
 
         <div class="form-group" id="operation2Group">
-            <label for="operation2">Operation 2:</label>
+            <div class="operation-header">
+                <label for="operation2">Operation 2:</label>
+                <button type="button" class="add-button" onclick="showOperation3()">+</button>
+            </div>
             <select class="form-control" id="operation2" onchange="toggleInjectionOptions(2)">
                 <option value="">Select Operation</option>
                 <option value="phaco">Cataract</option>
@@ -260,8 +287,11 @@
         </div>
 
         <div class="form-group">
-            <label for="doctor1">Primary Doctor:</label>
-            <select id="doctor1" name="doctor1" onchange="toggleSecondDoctor()">
+            <div class="doctor-header">
+                <label for="doctor1">Primary Doctor:</label>
+                <button type="button" class="add-button" onclick="showDoctor2()">+</button>
+            </div>
+            <select id="doctor1" name="doctor1">
                 <option value="">Select Primary Doctor</option>
                 <option value="leslie_cheng">Leslie Cheng</option>
                 <option value="cheung_sek_hong">Cheung Sek Hong</option>
@@ -455,29 +485,10 @@
                 });
             }
 
-            // Show/hide operation2 based on operation1
-            if (operationNumber === 1) {
-                const operation2Group = document.getElementById('operation2Group');
-                if (select.value) {
-                    operation2Group.style.display = 'flex';
-                } else {
-                    operation2Group.style.display = 'none';
-                    // Clear operation2 and operation3 values when hiding operation2
-                    document.getElementById('operation2').value = '';
-                    document.getElementById('operation3').value = '';
-                    document.getElementById('injectionOptions2').style.display = 'none';
-                    document.getElementById('injectionOptions3').style.display = 'none';
-                    document.getElementById('operation3Group').style.display = 'none';
-                }
-            }
-
-            // Show/hide operation3 based on operation2 (keep existing logic)
+            // Remove automatic showing of operation3
             if (operationNumber === 2) {
-                const operation3Group = document.getElementById('operation3Group');
-                if (select.value) {
-                    operation3Group.style.display = 'flex';
-                } else {
-                    operation3Group.style.display = 'none';
+                if (!select.value) {
+                    document.getElementById('operation3Group').style.display = 'none';
                     document.getElementById('operation3').value = '';
                     document.getElementById('injectionOptions3').style.display = 'none';
                 }
@@ -498,16 +509,16 @@
             });
         });
 
-        function toggleSecondDoctor() {
-            const doctor1 = document.getElementById('doctor1');
-            const doctor2Group = document.getElementById('doctor2Group');
-            
-            if (doctor1.value) {
-                doctor2Group.style.display = 'flex';
-            } else {
-                doctor2Group.style.display = 'none';
-                document.getElementById('doctor2').value = '';
-            }
+        function showOperation2() {
+            document.getElementById('operation2Group').style.display = 'flex';
+        }
+
+        function showOperation3() {
+            document.getElementById('operation3Group').style.display = 'flex';
+        }
+
+        function showDoctor2() {
+            document.getElementById('doctor2Group').style.display = 'flex';
         }
 
         function resetForm() {
