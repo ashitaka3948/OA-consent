@@ -230,6 +230,20 @@
         .left-column .form-group {
             margin-bottom: 30px;
         }
+
+        .today-button {
+            padding: 4px 8px;
+            background-color: #00b3b3;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 12px;
+        }
+
+        .today-button:hover {
+            background-color: #009999;
+        }
     </style>
 </head>
 <body>
@@ -263,7 +277,10 @@
 
             <div class="right-column">
                 <div class="form-group">
-                    <label for="selectedDate">Operation Date:</label>
+                    <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 5px;">
+                        <label for="selectedDate">Operation Date:</label>
+                        <button type="button" class="today-button" onclick="setToday()">Today</button>
+                    </div>
                     <div class="calendar" id="calendar">
                         <div class="calendar-header">
                             <button type="button" onclick="previousMonth()">&lt;</button>
@@ -586,6 +603,13 @@
             document.getElementById('doctor2Group').style.display = 'flex';
         }
 
+        function setToday() {
+            currentDate = new Date();
+            selectedDate = new Date();
+            document.getElementById('selectedDate').value = selectedDate.toISOString().split('T')[0];
+            updateCalendar();
+        }
+
         function resetForm() {
             // Reset form fields
             document.getElementById('surgeryForm').reset();
@@ -608,6 +632,13 @@
             
             // Hide doctor2
             document.getElementById('doctor2Group').style.display = 'none';
+
+            // Reset calendar to tomorrow's date
+            currentDate = new Date();
+            selectedDate = new Date(currentDate);
+            selectedDate.setDate(selectedDate.getDate() + 1);
+            document.getElementById('selectedDate').value = selectedDate.toISOString().split('T')[0];
+            updateCalendar();
         }
     </script>
 </body>
