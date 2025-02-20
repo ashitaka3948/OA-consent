@@ -280,6 +280,7 @@
                     <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 5px;">
                         <label for="selectedDate">Operation Date:</label>
                         <button type="button" class="today-button" onclick="setToday()">Today</button>
+                        <button type="button" class="today-button" id="noDateButton" onclick="toggleNoDate()">No Date</button>
                     </div>
                     <div class="calendar" id="calendar">
                         <div class="calendar-header">
@@ -297,7 +298,7 @@
                             <div class="weekday-header">Sa</div>
                         </div>
                     </div>
-                    <input type="hidden" id="selectedDate" name="selectedDate" required>
+                    <input type="hidden" id="selectedDate" name="selectedDate">
                 </div>
             </div>
         </div>
@@ -519,9 +520,18 @@
             });
         });
 
-        // Update the form submission handler
+        // Update the form submission handler to handle no-date case
         document.getElementById('surgeryForm').addEventListener('submit', function(e) {
             e.preventDefault();
+            
+            // Check if all required fields except date are filled
+            const requiredFields = Array.from(this.querySelectorAll('[required]'));
+            const isValid = requiredFields.every(field => field.value.trim() !== '');
+            
+            if (!isValid) {
+                alert('Please fill in all required fields');
+                return;
+            }
             
             const formData = new FormData(this);
             const submitButton = e.submitter;
@@ -539,11 +549,7 @@
             })
             .then(blob => {
                 const url = window.URL.createObjectURL(blob);
-                
-                // Open PDF in a new window without printing
                 window.open(url, '_blank');
-                
-                // Clean up
                 setTimeout(() => {
                     window.URL.revokeObjectURL(url);
                 }, 5000);
@@ -610,6 +616,31 @@
             updateCalendar();
         }
 
+        let dateEnabled = true;  // Add this variable to track date state
+
+        function toggleNoDate() {
+            const calendar = document.getElementById('calendar');
+            const noDateButton = document.getElementById('noDateButton');
+            const selectedDateInput = document.getElementById('selectedDate');
+            
+            dateEnabled = !dateEnabled;
+            
+            if (!dateEnabled) {
+                // Disable date
+                calendar.style.opacity = '0.5';
+                calendar.style.pointerEvents = 'none';
+                selectedDateInput.value = '';
+                noDateButton.style.backgroundColor = '#808080';  // Grey when active
+            } else {
+                // Enable date
+                calendar.style.opacity = '1';
+                calendar.style.pointerEvents = 'auto';
+                selectedDateInput.value = selectedDate.toISOString().split('T')[0];
+                noDateButton.style.backgroundColor = '#00b3b3';  // Original color
+            }
+        }
+
+        // Update resetForm function to reset date state
         function resetForm() {
             // Reset form fields
             document.getElementById('surgeryForm').reset();
@@ -639,6 +670,11 @@
             selectedDate.setDate(selectedDate.getDate() + 1);
             document.getElementById('selectedDate').value = selectedDate.toISOString().split('T')[0];
             updateCalendar();
+
+            // Reset date state
+            if (!dateEnabled) {
+                toggleNoDate();  // This will re-enable the date
+            }
         }
     </script>
 </body>

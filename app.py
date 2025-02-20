@@ -191,12 +191,14 @@ def generate_english_consent():
     if doctor2_name:
         doctors = f"{doctor1_name} and {doctor2_name}"
     else:
-        doctors = f"          {doctor1_name}"  # Add leading spaces for single doctor
+        doctors = f"          {doctor1_name}"
     
-    # Format the date to DD/MM/YYYY
+    # Format the date to DD/MM/YYYY only if date is provided
     operation_date = request.form.get('selectedDate')
-    date_parts = operation_date.split('-')
-    formatted_date = f"{date_parts[2]}/{date_parts[1]}/{date_parts[0]}"
+    formatted_date = ''
+    if operation_date:  # Only format if date exists
+        date_parts = operation_date.split('-')
+        formatted_date = f"{date_parts[2]}/{date_parts[1]}/{date_parts[0]}"
     
     form_data = {
         'patient_name': request.form.get('patientName'),
@@ -205,8 +207,8 @@ def generate_english_consent():
         'doctors': doctors,
         'doctors2': doctors,
         'operation_date': formatted_date,
-        'operation_date2': formatted_date,  # Add second date
-        'operation_date3': formatted_date,  # Add third date
+        'operation_date2': formatted_date,
+        'operation_date3': formatted_date,
     }
     
     pdf_buffer = fill_pdf_template(template_path, form_data, 'english')
@@ -231,7 +233,14 @@ def generate_chinese_consent():
     if doctor2_name:
         doctors = f"{doctor1_name}及{doctor2_name}"
     else:
-        doctors = f"          {doctor1_name}"  # Add leading spaces for single doctor
+        doctors = f"          {doctor1_name}"
+    
+    # Format the date to DD/MM/YYYY only if date is provided
+    operation_date = request.form.get('selectedDate')
+    formatted_date = ''
+    if operation_date:  # Only format if date exists
+        date_parts = operation_date.split('-')
+        formatted_date = f"{date_parts[2]}/{date_parts[1]}/{date_parts[0]}"
     
     # Translate eye selection to Chinese
     eye_selection = request.form.get('selectedEye')
@@ -241,11 +250,6 @@ def generate_chinese_consent():
         'both eyes': '雙'
     }.get(eye_selection, '')
     
-    # Format the date to DD/MM/YYYY
-    operation_date = request.form.get('selectedDate')
-    date_parts = operation_date.split('-')
-    formatted_date = f"{date_parts[2]}/{date_parts[1]}/{date_parts[0]}"
-    
     form_data = {
         'patient_name': request.form.get('patientName'),
         'patient_id': request.form.get('patientId'),
@@ -253,8 +257,8 @@ def generate_chinese_consent():
         'doctors': doctors,
         'doctors2': doctors,
         'operation_date': formatted_date,
-        'operation_date2': formatted_date,  # Add second date
-        'operation_date3': formatted_date,  # Add third date
+        'operation_date2': formatted_date,
+        'operation_date3': formatted_date,
     }
     
     pdf_buffer = fill_pdf_template(template_path, form_data, 'chinese')
