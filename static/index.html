@@ -26,13 +26,23 @@
             gap: 10px;
         }
         .eye-button {
+            background-color: white;
+            color: black;
             padding: 10px 20px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
             cursor: pointer;
+            min-width: 100px;  /* Add fixed minimum width */
+            box-sizing: border-box;  /* Include border in element size */
+        }
+        .eye-button:not(.selected) {
+            background-color: white;
+            color: black;
         }
         .eye-button.selected {
-            background-color: #007bff;
+            background-color: #00b3b3;
             color: white;
-            border: none;
+            border: 1px solid #00b3b3;  /* Keep border but match background */
         }
         select, input {
             padding: 8px;
