@@ -281,7 +281,7 @@
                         <button type="button" class="eye-button" data-eye="left eye">Left Eye</button>
                         <button type="button" class="eye-button" data-eye="both eyes">Both Eyes</button>
                     </div>
-                    <input type="hidden" id="selectedEye" name="selectedEye" required>
+                    <input type="hidden" id="selectedEye" name="selectedEye">
                 </div>
             </div>
 
@@ -524,9 +524,16 @@
 
         eyeButtons.forEach(button => {
             button.addEventListener('click', function() {
-                eyeButtons.forEach(btn => btn.classList.remove('selected'));
-                this.classList.add('selected');
-                selectedEyeInput.value = this.dataset.eye;
+                if (this.classList.contains('selected')) {
+                    // If clicking already selected button, deselect it
+                    this.classList.remove('selected');
+                    selectedEyeInput.value = '';
+                } else {
+                    // Otherwise select the new button and deselect others
+                    eyeButtons.forEach(btn => btn.classList.remove('selected'));
+                    this.classList.add('selected');
+                    selectedEyeInput.value = this.dataset.eye;
+                }
             });
         });
 
@@ -534,7 +541,7 @@
         document.getElementById('surgeryForm').addEventListener('submit', function(e) {
             e.preventDefault();
             
-            // Check if all required fields except date are filled
+            // Check only required fields except eye selection
             const requiredFields = Array.from(this.querySelectorAll('[required]'));
             const isValid = requiredFields.every(field => field.value.trim() !== '');
             
