@@ -40,72 +40,72 @@ TEMPLATES = {
 # Add this doctor name mapping at the top of the file
 DOCTOR_NAMES = {
     'leslie_cheng': {
-        'english': 'CHENG LESLIE KA-LOK',
+        'english': 'Cheng Ka Lok',
         'chinese': '鄭家樂'
     },
-    'cheung_sek_hong': {
-        'english': 'CHEUNG SEK HONG',
-        'chinese': '張錫康'
-    },
-    'andrew_fok': {
-        'english': 'FOK CHUNG TIN ANDREW',
-        'chinese': '霍頌天'
-    },
-    'charmaine_hon': {
-        'english': 'HON CHARMAINE',
-        'chinese': '韓尚穎'
-    },
     'callie_ko': {
-        'english': 'KO KA LI CALLIE',
+        'english': 'Ko Ka Li',
         'chinese': '高嘉莉'
     },
     'isabel_lai': {
-        'english': 'LAI SUM WAI ISABEL',
+        'english': 'Lai Sum Wai',
         'chinese': '黎心慧'
     },
     'douglas_lam': {
-        'english': 'LAM KING TAK DOUGLAS',
+        'english': 'Lam King Tak',
         'chinese': '林敬德'
     },
     'winnie_lau': {
-        'english': 'LAU WAI YING WINNIE',
+        'english': 'Lau Wai Ying',
         'chinese': '劉韋形'
     },
     'gary_lee': {
-        'english': 'LEE KA YAU',
+        'english': 'Lee Ka Yau',
         'chinese': '李嘉祐'
     },
     'alex_ng': {
-        'english': 'NG LAP KI',
+        'english': 'Ng Lap Ki',
         'chinese': '伍立祺'
     },
-    'shiu_chi_yuen': {
-        'english': 'SHIU CHI YUEN',
-        'chinese': '邵志遠'
-    },
     'patrick_tong': {
-        'english': 'TONG PAK CHUEN',
+        'english': 'Tong Pak Chuen',
         'chinese': '唐柏泉'
     },
-    'donald_woo': {
-        'english': 'WOO CHAI FONG DONALD',
-        'chinese': '賀澤烽'
-    },
     'victor_woo': {
-        'english': 'WOO CHI PANG CLEOPHAS',
+        'english': 'Woo Chi Pang',
         'chinese': '胡志鵬'
     },
-    'jean_paul_yih': {
-        'english': 'YIH JEAN-PAUL LAI BONG',
-        'chinese': '葉禮邦'
-    },
     'nancy_yuen': {
-        'english': 'YUEN SHI YIN',
+        'english': 'Yuen Shi Yin',
         'chinese': '袁淑賢'
     },
+    'andrew_fok': {
+        'english': 'Andrew Fok',
+        'chinese': '霍頌天'
+    },
     'carol_yu': {
-        'english': 'YU SHAN CAROL',
+        'english': 'Carol Yu',
         'chinese': '余珊'
+    },
+    'charmaine_hon': {
+        'english': 'Charmaine Hon',
+        'chinese': '韓尚穎'
+    },
+    'cheung_sek_hong': {
+        'english': 'Cheung Sek Hong',
+        'chinese': '張錫康'
+    },
+    'jean_paul_yih': {
+        'english': 'Jean Paul Yih',
+        'chinese': '葉禮邦'
+    },
+    'donald_woo': {
+        'english': 'Woo Chai Fong',
+        'chinese': '賀澤烽'
+    },
+    'shiu_chi_yuen': {
+        'english': 'Shiu Chi Yuen',
+        'chinese': '邵志遠'
     }
 }
 

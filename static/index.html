@@ -254,6 +254,26 @@
         .today-button:hover {
             background-color: #009999;
         }
+
+        .doctor-section {
+            display: flex;
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        
+        .doctor-section .form-group {
+            flex: 1;
+        }
+        
+        /* Remove the doctor2Group display:none style */
+        #doctor2Group {
+            display: block;
+        }
+        
+        /* Adjust operation section margin */
+        #operation1Group {
+            margin-top: 20px;
+        }
     </style>
 </head>
 <body>
@@ -310,6 +330,56 @@
                     </div>
                     <input type="hidden" id="selectedDate" name="selectedDate">
                 </div>
+            </div>
+        </div>
+
+        <div class="doctor-section">
+            <div class="form-group">
+                <label for="doctor1">Primary Doctor:</label>
+                <select id="doctor1" name="doctor1">
+                    <option value="">Select Primary Doctor</option>
+                    <option value="andrew_fok">Andrew Fok</option>
+                    <option value="carol_yu">Carol Yu</option>
+                    <option value="charmaine_hon">Charmaine Hon</option>
+                    <option value="leslie_cheng">Cheng Ka Lok</option>
+                    <option value="cheung_sek_hong">Cheung Sek Hong</option>
+                    <option value="jean_paul_yih">Jean Paul Yih</option>
+                    <option value="callie_ko">Ko Ka Li</option>
+                    <option value="isabel_lai">Lai Sum Wai</option>
+                    <option value="douglas_lam">Lam King Tak</option>
+                    <option value="winnie_lau">Lau Wai Ying</option>
+                    <option value="gary_lee">Lee Ka Yau</option>
+                    <option value="alex_ng">Ng Lap Ki</option>
+                    <option value="shiu_chi_yuen">Shiu Chi Yuen</option>
+                    <option value="patrick_tong">Tong Pak Chuen</option>
+                    <option value="donald_woo">Woo Chai Fong</option>
+                    <option value="victor_woo">Woo Chi Pang</option>
+                    <option value="nancy_yuen">Yuen Shi Yin</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="doctor2">Second Doctor:</label>
+                <select id="doctor2" name="doctor2">
+                    <option value="">Select Second Doctor</option>
+                    <option value="andrew_fok">Andrew Fok</option>
+                    <option value="carol_yu">Carol Yu</option>
+                    <option value="charmaine_hon">Charmaine Hon</option>
+                    <option value="leslie_cheng">Cheng Ka Lok</option>
+                    <option value="cheung_sek_hong">Cheung Sek Hong</option>
+                    <option value="jean_paul_yih">Jean Paul Yih</option>
+                    <option value="callie_ko">Ko Ka Li</option>
+                    <option value="isabel_lai">Lai Sum Wai</option>
+                    <option value="douglas_lam">Lam King Tak</option>
+                    <option value="winnie_lau">Lau Wai Ying</option>
+                    <option value="gary_lee">Lee Ka Yau</option>
+                    <option value="alex_ng">Ng Lap Ki</option>
+                    <option value="shiu_chi_yuen">Shiu Chi Yuen</option>
+                    <option value="patrick_tong">Tong Pak Chuen</option>
+                    <option value="donald_woo">Woo Chai Fong</option>
+                    <option value="victor_woo">Woo Chi Pang</option>
+                    <option value="nancy_yuen">Yuen Shi Yin</option>
+                </select>
             </div>
         </div>
 
@@ -377,57 +447,6 @@
                 <button type="button" class="injection-button" data-injection="beovu">Beovu</button>
                 <button type="button" class="injection-button" data-injection="ozurdex">Ozurdex</button>
             </div>
-        </div>
-
-        <div class="form-group">
-            <div class="doctor-header">
-                <label for="doctor1">Primary Doctor:</label>
-                <button type="button" class="add-button" onclick="showDoctor2()">+</button>
-            </div>
-            <select id="doctor1" name="doctor1">
-                <option value="">Select Primary Doctor</option>
-                <option value="leslie_cheng">Leslie Cheng</option>
-                <option value="cheung_sek_hong">Cheung Sek Hong</option>
-                <option value="andrew_fok">Andrew Fok</option>
-                <option value="charmaine_hon">Charmaine Hon</option>
-                <option value="callie_ko">Callie Ko</option>
-                <option value="isabel_lai">Isabel Lai</option>
-                <option value="douglas_lam">Douglas Lam</option>
-                <option value="winnie_lau">Winnie Lau</option>
-                <option value="gary_lee">Gary Lee</option>
-                <option value="alex_ng">Alex Ng</option>
-                <option value="shiu_chi_yuen">Shiu Chi Yuen</option>
-                <option value="patrick_tong">Patrick Tong</option>
-                <option value="donald_woo">Donald Woo</option>
-                <option value="victor_woo">Victor Woo</option>
-                <option value="jean_paul_yih">Jean Paul Yih</option>
-                <option value="nancy_yuen">Nancy Yuen</option>
-                <option value="carol_yu">Carol Yu</option>
-            </select>
-        </div>
-
-        <div class="form-group" id="doctor2Group">
-            <label for="doctor2">Second Doctor:</label>
-            <select id="doctor2" name="doctor2">
-                <option value="">Select Second Doctor</option>
-                <option value="leslie_cheng">Leslie Cheng</option>
-                <option value="cheung_sek_hong">Cheung Sek Hong</option>
-                <option value="andrew_fok">Andrew Fok</option>
-                <option value="charmaine_hon">Charmaine Hon</option>
-                <option value="callie_ko">Callie Ko</option>
-                <option value="isabel_lai">Isabel Lai</option>
-                <option value="douglas_lam">Douglas Lam</option>
-                <option value="winnie_lau">Winnie Lau</option>
-                <option value="gary_lee">Gary Lee</option>
-                <option value="alex_ng">Alex Ng</option>
-                <option value="shiu_chi_yuen">Shiu Chi Yuen</option>
-                <option value="patrick_tong">Patrick Tong</option>
-                <option value="donald_woo">Donald Woo</option>
-                <option value="victor_woo">Victor Woo</option>
-                <option value="jean_paul_yih">Jean Paul Yih</option>
-                <option value="nancy_yuen">Nancy Yuen</option>
-                <option value="carol_yu">Carol Yu</option>
-            </select>
         </div>
 
         <div class="button-group">
@@ -620,10 +639,6 @@
 
         function showOperation3() {
             document.getElementById('operation3Group').style.display = 'flex';
-        }
-
-        function showDoctor2() {
-            document.getElementById('doctor2Group').style.display = 'flex';
         }
 
         function setToday() {
