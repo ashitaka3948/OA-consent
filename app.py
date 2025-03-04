@@ -34,6 +34,9 @@ TEMPLATES = {
     'injection': {
         'english': 'templates/injection_consent_en.pdf',
         'chinese': 'templates/injection_consent_cn.pdf'
+    },
+    'ot_checklist': {
+        'template': 'templates/OT_Checklist.pdf'
     }
 }
 
@@ -133,12 +136,22 @@ FIELD_COORDINATES = {
     }
 }
 
+# Add field coordinates for OT Checklist
+OT_CHECKLIST_COORDINATES = {
+    'doctors': (200, 500),  # Adjust coordinates as needed
+    'date': (300, 600),
+    'patient_name': (150, 550),
+    'patient_number': (200, 450),
+    'hkid': (250, 400),
+    'operation': (180, 350)
+}
+
 def fill_pdf_template(template_path, form_data, language='english'):
     packet = BytesIO()
     can = canvas.Canvas(packet)
     
-    # Set font based on language
-    if language == 'chinese':
+    # Set font based on language or if it's OT checklist
+    if language == 'chinese' or 'OT_Checklist.pdf' in template_path:
         can.setFont('MSung', 12)
     else:
         can.setFont('Helvetica', 12)
@@ -147,7 +160,7 @@ def fill_pdf_template(template_path, form_data, language='english'):
     template = PdfReader(open(template_path, 'rb'))
     
     # Fill in the fields (only on first page)
-    field_coordinates = FIELD_COORDINATES[language]
+    field_coordinates = FIELD_COORDINATES.get(language, OT_CHECKLIST_COORDINATES)
     for field, coords in field_coordinates.items():
         if field in form_data:
             can.drawString(coords[0], coords[1], str(form_data[field]))
@@ -266,6 +279,65 @@ def generate_chinese_consent():
         pdf_buffer,
         mimetype='application/pdf',
         download_name=f'consent_{operation}_cn.pdf'
+    )
+
+@app.route('/ot_checklist', methods=['POST'])
+def generate_ot_checklist():
+    template_path = TEMPLATES['ot_checklist']['template']
+    
+    # Format doctors' names (Chinese + English)
+    doctor1_id = request.form.get('doctor1')
+    doctor2_id = request.form.get('doctor2')
+    
+    doctor1_name = ''
+    if doctor1_id:
+        doctor1_name = f"{DOCTOR_NAMES[doctor1_id]['chinese']} {DOCTOR_NAMES[doctor1_id]['english']}"
+    
+    doctor2_name = ''
+    if doctor2_id:
+        doctor2_name = f"{DOCTOR_NAMES[doctor2_id]['chinese']} {DOCTOR_NAMES[doctor2_id]['english']}"
+    
+    doctors = doctor1_name
+    if doctor2_name:
+        doctors = f"{doctor1_name}   {doctor2_name}"
+    
+    # Get operations
+    operations = []
+    for i in range(1, 4):  # Check all 3 operation fields
+        op = request.form.get(f'operation{i}')
+        if op:
+            operations.append(op.capitalize())
+    
+    # Format operation string with eye selection
+    eye_selection = request.form.get('selectedEye', '')
+    operation_str = f"{eye_selection.capitalize()}, {' + '.join(operations)}"
+    
+    # Format patient name
+    patient_chinese = request.form.get('patientName', '')
+    patient_english = request.form.get('patientEnglishName', '')
+    patient_full_name = f"{patient_chinese} {patient_english}"
+    
+    # Format date
+    operation_date = request.form.get('selectedDate')
+    formatted_date = ''
+    if operation_date:
+        date_parts = operation_date.split('-')
+        formatted_date = f"{date_parts[2]}/{date_parts[1]}/{date_parts[0]}"
+    
+    form_data = {
+        'doctors': doctors,
+        'date': formatted_date,
+        'patient_name': patient_full_name,
+        'patient_number': request.form.get('patientId', ''),
+        'hkid': request.form.get('hkid', ''),
+        'operation': operation_str
+    }
+    
+    pdf_buffer = fill_pdf_template(template_path, form_data)
+    return send_file(
+        pdf_buffer,
+        mimetype='application/pdf',
+        download_name='ot_checklist.pdf'
     )
 
 if __name__ == '__main__':
