@@ -237,8 +237,12 @@
             flex: 1;
         }
 
-        .left-column .form-group {
-            margin-bottom: 30px;
+        .left-column .form-group:not(:last-child) {
+            margin-bottom: 15px;  /* Reduced from 30px */
+        }
+
+        .left-column .form-group:last-child {
+            margin-top: 30px;  /* Add space before eye selection */
         }
 
         .today-button {
@@ -285,13 +289,23 @@
         <div class="top-section">
             <div class="left-column">
                 <div class="form-group">
-                    <label for="patientName">Patient Name:</label>
-                    <input type="text" id="patientName" name="patientName" required>
+                    <label for="patientName">Patient Chinese Name:</label>
+                    <input type="text" id="patientName" name="patientName">
                 </div>
 
                 <div class="form-group">
-                    <label for="patientId">Patient ID:</label>
-                    <input type="text" id="patientId" name="patientId" required>
+                    <label for="patientEnglishName">Patient English Name:</label>
+                    <input type="text" id="patientEnglishName" name="patientEnglishName">
+                </div>
+
+                <div class="form-group">
+                    <label for="patientId">Patient Number:</label>
+                    <input type="text" id="patientId" name="patientId">
+                </div>
+
+                <div class="form-group">
+                    <label for="hkid">HKID:</label>
+                    <input type="text" id="hkid" name="hkid">
                 </div>
 
                 <div class="form-group">
