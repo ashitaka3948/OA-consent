@@ -138,12 +138,12 @@ FIELD_COORDINATES = {
 
 # Add field coordinates for OT Checklist
 OT_CHECKLIST_COORDINATES = {
-    'doctors': (200, 500),  # These coordinates seem to work
-    'date': (300, 600),     # Try different coordinates for date
-    'patient_name': (150, 550),  # These coordinates seem to work
+    'doctors': (115, 730),  # These coordinates seem to work
+    'date': (420, 730),     # Try different coordinates for date
+    'patient_name': (150, 704),  # These coordinates seem to work
     'patient_number': (200, 450),
-    'hkid': (250, 400),
-    'operation': (180, 350)
+    'hkid': (350, 677),
+    'operation': (130, 650)
 }
 
 def fill_pdf_template(template_path, form_data, language='english'):
@@ -316,11 +316,6 @@ def generate_ot_checklist():
     eye_selection = request.form.get('selectedEye', '')
     operation_str = f"{eye_selection.capitalize()}, {' + '.join(operations)}"
     
-    # Format patient name
-    patient_chinese = request.form.get('patientName', '')
-    patient_english = request.form.get('patientEnglishName', '')
-    patient_full_name = f"{patient_chinese} {patient_english}"
-    
     # Format date
     operation_date = request.form.get('selectedDate')
     formatted_date = ''
@@ -331,15 +326,10 @@ def generate_ot_checklist():
     form_data = {
         'doctors': doctors,
         'date': formatted_date,
-        'patient_name': patient_full_name,
-        'patient_number': request.form.get('patientId', ''),
+        'patient_name': request.form.get('patientName', ''),
         'hkid': request.form.get('hkid', ''),
         'operation': operation_str
     }
-    
-    # Debug print to see what data we're trying to write
-    print("Form Data:", form_data)
-    print("Coordinates:", OT_CHECKLIST_COORDINATES)
     
     pdf_buffer = fill_pdf_template(template_path, form_data)
     return send_file(

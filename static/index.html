@@ -255,6 +255,11 @@
             font-size: 12px;
         }
 
+        /* Add specific style for Today and No Date buttons */
+        #noDateButton, #todayButton {
+            background-color: #808080;  /* Initial grey color */
+        }
+
         .today-button:hover {
             background-color: #009999;
         }
@@ -289,18 +294,8 @@
         <div class="top-section">
             <div class="left-column">
                 <div class="form-group">
-                    <label for="patientName">Patient Chinese Name:</label>
+                    <label for="patientName">Patient Name:</label>
                     <input type="text" id="patientName" name="patientName">
-                </div>
-
-                <div class="form-group">
-                    <label for="patientEnglishName">Patient English Name:</label>
-                    <input type="text" id="patientEnglishName" name="patientEnglishName">
-                </div>
-
-                <div class="form-group">
-                    <label for="patientId">Patient Number:</label>
-                    <input type="text" id="patientId" name="patientId">
                 </div>
 
                 <div class="form-group">
@@ -323,7 +318,7 @@
                 <div class="form-group">
                     <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 5px;">
                         <label for="selectedDate">Operation Date:</label>
-                        <button type="button" class="today-button" onclick="setToday()">Today</button>
+                        <button type="button" class="today-button" id="todayButton" onclick="toggleToday()">Today</button>
                         <button type="button" class="today-button" id="noDateButton" onclick="toggleNoDate()">No Date</button>
                     </div>
                     <div class="calendar" id="calendar">
@@ -531,6 +526,16 @@
                     dayDiv.classList.add('selected');
                     selectedDate = currentDay;
                     document.getElementById('selectedDate').value = selectedDate.toISOString().split('T')[0];
+                    
+                    // Deactivate Today button if date is not today
+                    const todayButton = document.getElementById('todayButton');
+                    if (currentDay.toDateString() !== new Date().toDateString()) {
+                        todayEnabled = false;
+                        todayButton.style.backgroundColor = '#808080';
+                    } else {
+                        todayEnabled = true;
+                        todayButton.style.backgroundColor = '#00b3b3';
+                    }
                 });
                 
                 grid.appendChild(dayDiv);
@@ -656,11 +661,28 @@
             document.getElementById('operation3Group').style.display = 'flex';
         }
 
-        function setToday() {
-            currentDate = new Date();
-            selectedDate = new Date();
-            document.getElementById('selectedDate').value = selectedDate.toISOString().split('T')[0];
-            updateCalendar();
+        // Add variable to track Today button state
+        let todayEnabled = false;
+
+        function toggleToday() {
+            const todayButton = document.getElementById('todayButton');
+            todayEnabled = !todayEnabled;
+            
+            if (todayEnabled) {
+                // Set to today and activate button
+                currentDate = new Date();
+                selectedDate = new Date();
+                document.getElementById('selectedDate').value = selectedDate.toISOString().split('T')[0];
+                updateCalendar();
+                todayButton.style.backgroundColor = '#00b3b3';  // Teal when active
+            } else {
+                // Reset to tomorrow and deactivate button
+                selectedDate = new Date(currentDate);
+                selectedDate.setDate(selectedDate.getDate() + 1);
+                document.getElementById('selectedDate').value = selectedDate.toISOString().split('T')[0];
+                updateCalendar();
+                todayButton.style.backgroundColor = '#808080';  // Grey when inactive
+            }
         }
 
         let dateEnabled = true;  // Add this variable to track date state
@@ -677,13 +699,13 @@
                 calendar.style.opacity = '0.5';
                 calendar.style.pointerEvents = 'none';
                 selectedDateInput.value = '';
-                noDateButton.style.backgroundColor = '#808080';  // Grey when active
+                noDateButton.style.backgroundColor = '#00b3b3';  // Teal when active
             } else {
                 // Enable date
                 calendar.style.opacity = '1';
                 calendar.style.pointerEvents = 'auto';
                 selectedDateInput.value = selectedDate.toISOString().split('T')[0];
-                noDateButton.style.backgroundColor = '#00b3b3';  // Original color
+                noDateButton.style.backgroundColor = '#808080';  // Grey when inactive
             }
         }
 
@@ -718,9 +740,13 @@
             document.getElementById('selectedDate').value = selectedDate.toISOString().split('T')[0];
             updateCalendar();
 
-            // Reset date state
+            // Reset Today button
+            todayEnabled = false;
+            document.getElementById('todayButton').style.backgroundColor = '#808080';
+
+            // Reset No Date button and state
             if (!dateEnabled) {
-                toggleNoDate();  // This will re-enable the date
+                toggleNoDate();
             }
         }
     </script>
