@@ -146,6 +146,24 @@ OT_CHECKLIST_COORDINATES = {
     'operation': (130, 650)
 }
 
+def format_hkid(hkid):
+    """Helper function to format HKID consistently"""
+    if not hkid or len(hkid.strip()) == 0:
+        return "()"
+    
+    # Clean the input
+    hkid = hkid.strip().upper()
+    
+    if len(hkid) >= 8:
+        # For complete HKID (8 characters)
+        return f"{hkid[:7]}({hkid[7]})"
+    elif len(hkid) == 7:
+        # For HKID without check digit
+        return f"{hkid}()"
+    else:
+        # For partial HKID
+        return f"{hkid}()"
+
 def fill_pdf_template(template_path, form_data, language='english'):
     packet = BytesIO()
     can = canvas.Canvas(packet)
@@ -267,9 +285,13 @@ def generate_chinese_consent():
         'both eyes': '雙'
     }.get(eye_selection, '')
     
+    # Get HKID from form data and format it
+    hkid = request.form.get('hkid', '').strip()
+    formatted_hkid = format_hkid(hkid)
+    
     form_data = {
-        'patient_name': request.form.get('patientName'),
-        'patient_id': request.form.get('patientId'),
+        'patient_name': request.form.get('patientName', ''),
+        'patient_id': formatted_hkid,  # Use formatted HKID here
         'eye': eye_in_chinese,
         'doctors': doctors,
         'doctors2': doctors,
@@ -314,7 +336,7 @@ def generate_ot_checklist():
     
     # Format operation string with eye selection
     eye_selection = request.form.get('selectedEye', '')
-    operation_str = f"{eye_selection.capitalize()}, {' + '.join(operations)}"
+    operation_str = f"{eye_selection.capitalize()}   {' + '.join(operations)}"
     
     # Format date
     operation_date = request.form.get('selectedDate')
@@ -323,11 +345,15 @@ def generate_ot_checklist():
         date_parts = operation_date.split('-')
         formatted_date = f"{date_parts[2]}/{date_parts[1]}/{date_parts[0]}"
     
+    # Get HKID from form data and format it
+    hkid = request.form.get('hkid', '').strip()
+    formatted_hkid = format_hkid(hkid)
+    
     form_data = {
         'doctors': doctors,
         'date': formatted_date,
         'patient_name': request.form.get('patientName', ''),
-        'hkid': request.form.get('hkid', ''),
+        'hkid': formatted_hkid,
         'operation': operation_str
     }
     

@@ -300,7 +300,12 @@
 
                 <div class="form-group">
                     <label for="hkid">HKID:</label>
-                    <input type="text" id="hkid" name="hkid">
+                    <div style="display: flex; align-items: center;">
+                        <input type="text" id="hkid" name="hkid" maxlength="7" style="margin-right: 2px;" oninput="formatHKID(this)">
+                        <span>(</span>
+                        <input type="text" id="hkidCheck" name="hkidCheck" maxlength="1" style="width: 20px; margin: 0 2px;" oninput="formatHKIDCheck(this)">
+                        <span>)</span>
+                    </div>
                 </div>
 
                 <div class="form-group">
@@ -593,6 +598,23 @@
             const submitButton = e.submitter;
             const action = submitButton.getAttribute('formaction');
             
+            // Update form submission to combine HKID values
+            const hkidMain = document.getElementById('hkid').value;
+            const hkidCheck = document.getElementById('hkidCheck').value;
+            
+            // Remove any existing hidden HKID input
+            const existingHidden = this.querySelector('input[name="hkid"][type="hidden"]');
+            if (existingHidden) {
+                existingHidden.remove();
+            }
+            
+            // Create a hidden input with the combined HKID
+            const hiddenInput = document.createElement('input');
+            hiddenInput.type = 'hidden';
+            hiddenInput.name = 'hkid';
+            hiddenInput.value = hkidMain + hkidCheck;
+            this.appendChild(hiddenInput);
+            
             fetch(action, {
                 method: 'POST',
                 body: formData
@@ -748,6 +770,42 @@
             if (!dateEnabled) {
                 toggleNoDate();
             }
+
+            // Reset HKID fields
+            document.getElementById('hkid').value = '';
+            document.getElementById('hkidCheck').value = '';
+        }
+
+        function formatHKID(input) {
+            // Remove any non-alphanumeric characters and convert to uppercase
+            let value = input.value.replace(/[^a-zA-Z0-9]/g, '').toUpperCase();
+            
+            // Ensure maximum length of 7 characters (excluding check digit)
+            if (value.length > 7) {
+                value = value.slice(0, 7);
+            }
+            
+            input.value = value;
+
+            // If 7 characters are entered, move to the check digit field
+            if (value.length === 7) {
+                const checkDigitInput = document.getElementById('hkidCheck');
+                checkDigitInput.focus();
+                // Optional: Select any existing content in the check digit field
+                checkDigitInput.select();
+            }
+        }
+
+        function formatHKIDCheck(input) {
+            // Remove any non-alphanumeric characters and convert to uppercase
+            let value = input.value.replace(/[^a-zA-Z0-9]/g, '').toUpperCase();
+            
+            // Take only the last character
+            if (value.length > 0) {
+                value = value.slice(-1);
+            }
+            
+            input.value = value;
         }
     </script>
 </body>
