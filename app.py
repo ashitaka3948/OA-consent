@@ -156,7 +156,9 @@ def format_hkid(hkid):
     
     if len(hkid) >= 8:
         # For complete HKID (8 characters)
-        return f"{hkid[:7]}({hkid[7]})"
+        main_part = hkid[:7]
+        check_digit = hkid[7]
+        return f"{main_part}({check_digit})"
     elif len(hkid) == 7:
         # For HKID without check digit
         return f"{hkid}()"
@@ -185,6 +187,13 @@ def fill_pdf_template(template_path, form_data, language='english'):
 
     for field, coords in field_coordinates.items():
         if field in form_data:
+            # Special handling for HKID to ensure brackets are preserved
+            if field == 'hkid' or field == 'patient_id':
+                if language == 'chinese' or 'OT_Checklist.pdf' in template_path:
+                    can.setFont('MSung', 12)
+                else:
+                    can.setFont('Helvetica', 12)
+            
             can.drawString(coords[0], coords[1], str(form_data[field]))
     
     can.save()
@@ -213,99 +222,147 @@ def index():
 
 @app.route('/english', methods=['POST'])
 def generate_english_consent():
-    operation = request.form.get('operation1')
-    template_path = TEMPLATES[operation]['english']
-    
-    # Get doctor names in English and combine if necessary
-    doctor1_id = request.form.get('doctor1')
-    doctor2_id = request.form.get('doctor2')
-    doctor1_name = DOCTOR_NAMES[doctor1_id]['english'] if doctor1_id else ''
-    doctor2_name = DOCTOR_NAMES[doctor2_id]['english'] if doctor2_id else ''
-    
-    # Format doctors string for both fields
-    if doctor2_name:
-        doctors = f"{doctor1_name} and {doctor2_name}"
-    else:
-        doctors = f"          {doctor1_name}"
-    
-    # Format the date to DD/MM/YYYY only if date is provided
-    operation_date = request.form.get('selectedDate')
-    formatted_date = ''
-    if operation_date:  # Only format if date exists
-        date_parts = operation_date.split('-')
-        formatted_date = f"{date_parts[2]}/{date_parts[1]}/{date_parts[0]}"
-    
-    form_data = {
-        'patient_name': request.form.get('patientName'),
-        'patient_id': request.form.get('patientId'),
-        'eye': request.form.get('selectedEye'),
-        'doctors': doctors,
-        'doctors2': doctors,
-        'operation_date': formatted_date,
-        'operation_date2': formatted_date,
-        'operation_date3': formatted_date,
-    }
-    
-    pdf_buffer = fill_pdf_template(template_path, form_data, 'english')
-    return send_file(
-        pdf_buffer,
-        mimetype='application/pdf',
-        download_name=f'consent_{operation}_en.pdf'
-    )
+    try:
+        # Get operation value and validate
+        operation = request.form.get('operation1', '')
+        if not operation:
+            return "No operation selected", 400
+            
+        # Check if template exists in dictionary
+        if operation not in TEMPLATES or 'english' not in TEMPLATES[operation]:
+            return f"Template not found for operation: {operation}", 404
+            
+        template_path = TEMPLATES[operation]['english']
+        
+        # Verify template file exists
+        if not os.path.exists(template_path):
+            return f"Template file does not exist: {template_path}", 404
+        
+        # Get doctor names in English and combine if necessary
+        doctor1_id = request.form.get('doctor1')
+        doctor2_id = request.form.get('doctor2')
+        doctor1_name = DOCTOR_NAMES[doctor1_id]['english'] if doctor1_id else ''
+        doctor2_name = DOCTOR_NAMES[doctor2_id]['english'] if doctor2_id else ''
+        
+        # Format doctors string for both fields
+        if doctor2_name:
+            doctors = f"{doctor1_name} and {doctor2_name}"
+        else:
+            doctors = f"          {doctor1_name}"
+        
+        # Format the date to DD/MM/YYYY only if date is provided
+        operation_date = request.form.get('selectedDate')
+        formatted_date = ''
+        if operation_date:  # Only format if date exists
+            date_parts = operation_date.split('-')
+            formatted_date = f"{date_parts[2]}/{date_parts[1]}/{date_parts[0]}"
+        
+        # Get HKID and format it
+        try:
+            hkid = request.form.get('hkid', '').strip()
+            formatted_hkid = format_hkid(hkid)
+        except Exception as e:
+            print(f"Error formatting HKID: {e}")
+            formatted_hkid = "()"
+        
+        form_data = {
+            'patient_name': request.form.get('patientName', ''),
+            'patient_id': formatted_hkid,
+            'eye': request.form.get('selectedEye', ''),
+            'doctors': doctors,
+            'doctors2': doctors,
+            'operation_date': formatted_date,
+            'operation_date2': formatted_date,
+            'operation_date3': formatted_date,
+        }
+        
+        pdf_buffer = fill_pdf_template(template_path, form_data, 'english')
+        return send_file(
+            pdf_buffer,
+            mimetype='application/pdf',
+            download_name=f'consent_{operation}_en.pdf'
+        )
+    except Exception as e:
+        import traceback
+        print(f"Error generating English consent: {e}")
+        print(traceback.format_exc())
+        return "Error generating consent form. Please check server logs.", 500
 
 @app.route('/chinese', methods=['POST'])
 def generate_chinese_consent():
-    operation = request.form.get('operation1')
-    template_path = TEMPLATES[operation]['chinese']
-    
-    # Get doctor names in Chinese and combine if necessary
-    doctor1_id = request.form.get('doctor1')
-    doctor2_id = request.form.get('doctor2')
-    doctor1_name = DOCTOR_NAMES[doctor1_id]['chinese'] if doctor1_id else ''
-    doctor2_name = DOCTOR_NAMES[doctor2_id]['chinese'] if doctor2_id else ''
-    
-    # Format doctors string for both fields
-    if doctor2_name:
-        doctors = f"{doctor1_name}及{doctor2_name}"
-    else:
-        doctors = f"          {doctor1_name}"
-    
-    # Format the date to DD/MM/YYYY only if date is provided
-    operation_date = request.form.get('selectedDate')
-    formatted_date = ''
-    if operation_date:  # Only format if date exists
-        date_parts = operation_date.split('-')
-        formatted_date = f"{date_parts[2]}/{date_parts[1]}/{date_parts[0]}"
-    
-    # Translate eye selection to Chinese
-    eye_selection = request.form.get('selectedEye')
-    eye_in_chinese = {
-        'right eye': '右',
-        'left eye': '左',
-        'both eyes': '雙'
-    }.get(eye_selection, '')
-    
-    # Get HKID from form data and format it
-    hkid = request.form.get('hkid', '').strip()
-    formatted_hkid = format_hkid(hkid)
-    
-    form_data = {
-        'patient_name': request.form.get('patientName', ''),
-        'patient_id': formatted_hkid,  # Use formatted HKID here
-        'eye': eye_in_chinese,
-        'doctors': doctors,
-        'doctors2': doctors,
-        'operation_date': formatted_date,
-        'operation_date2': formatted_date,
-        'operation_date3': formatted_date,
-    }
-    
-    pdf_buffer = fill_pdf_template(template_path, form_data, 'chinese')
-    return send_file(
-        pdf_buffer,
-        mimetype='application/pdf',
-        download_name=f'consent_{operation}_cn.pdf'
-    )
+    try:
+        # Get operation value and validate
+        operation = request.form.get('operation1', '')
+        if not operation:
+            return "No operation selected", 400
+            
+        # Check if template exists
+        if operation not in TEMPLATES or 'chinese' not in TEMPLATES[operation]:
+            return f"Template not found for operation: {operation}", 404
+            
+        template_path = TEMPLATES[operation]['chinese']
+        
+        # Verify template file exists
+        if not os.path.exists(template_path):
+            return f"Template file does not exist: {template_path}", 404
+        
+        # Get doctor names in Chinese and combine if necessary
+        doctor1_id = request.form.get('doctor1')
+        doctor2_id = request.form.get('doctor2')
+        doctor1_name = DOCTOR_NAMES[doctor1_id]['chinese'] if doctor1_id else ''
+        doctor2_name = DOCTOR_NAMES[doctor2_id]['chinese'] if doctor2_id else ''
+        
+        # Format doctors string for both fields
+        if doctor2_name:
+            doctors = f"{doctor1_name}及{doctor2_name}"
+        else:
+            doctors = f"          {doctor1_name}"
+        
+        # Format the date to DD/MM/YYYY only if date is provided
+        operation_date = request.form.get('selectedDate')
+        formatted_date = ''
+        if operation_date:  # Only format if date exists
+            date_parts = operation_date.split('-')
+            formatted_date = f"{date_parts[2]}/{date_parts[1]}/{date_parts[0]}"
+        
+        # Translate eye selection to Chinese
+        eye_selection = request.form.get('selectedEye')
+        eye_in_chinese = {
+            'right eye': '右',
+            'left eye': '左',
+            'both eyes': '雙'
+        }.get(eye_selection, '')
+        
+        # Get HKID from form data and format it
+        try:
+            hkid = request.form.get('hkid', '').strip()
+            formatted_hkid = format_hkid(hkid)
+        except Exception as e:
+            print(f"Error formatting HKID: {e}")
+            formatted_hkid = "()"
+        
+        form_data = {
+            'patient_name': request.form.get('patientName', ''),
+            'patient_id': formatted_hkid,  # Use formatted HKID here
+            'eye': eye_in_chinese,
+            'doctors': doctors,
+            'doctors2': doctors,
+            'operation_date': formatted_date,
+            'operation_date2': formatted_date,
+            'operation_date3': formatted_date,
+        }
+        
+        pdf_buffer = fill_pdf_template(template_path, form_data, 'chinese')
+        return send_file(
+            pdf_buffer,
+            mimetype='application/pdf',
+            download_name=f'consent_{operation}_cn.pdf'
+        )
+    except Exception as e:
+        import traceback
+        print(f"Error generating Chinese consent: {e}")
+        print(traceback.format_exc())
+        return "Error generating consent form. Please check server logs.", 500
 
 @app.route('/ot_checklist', methods=['POST'])
 def generate_ot_checklist():

@@ -594,26 +594,16 @@
                 return;
             }
             
+            // Get HKID values and combine them
+            const hkidMain = document.getElementById('hkid').value.trim().toUpperCase();
+            const hkidCheck = document.getElementById('hkidCheck').value.trim().toUpperCase();
+            
+            // Create FormData and set combined HKID
             const formData = new FormData(this);
+            formData.set('hkid', hkidMain + hkidCheck);  // Override the existing HKID value
+            
             const submitButton = e.submitter;
             const action = submitButton.getAttribute('formaction');
-            
-            // Update form submission to combine HKID values
-            const hkidMain = document.getElementById('hkid').value;
-            const hkidCheck = document.getElementById('hkidCheck').value;
-            
-            // Remove any existing hidden HKID input
-            const existingHidden = this.querySelector('input[name="hkid"][type="hidden"]');
-            if (existingHidden) {
-                existingHidden.remove();
-            }
-            
-            // Create a hidden input with the combined HKID
-            const hiddenInput = document.createElement('input');
-            hiddenInput.type = 'hidden';
-            hiddenInput.name = 'hkid';
-            hiddenInput.value = hkidMain + hkidCheck;
-            this.appendChild(hiddenInput);
             
             fetch(action, {
                 method: 'POST',
