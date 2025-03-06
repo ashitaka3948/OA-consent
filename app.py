@@ -154,17 +154,24 @@ def format_hkid(hkid):
     # Clean the input
     hkid = hkid.strip().upper()
     
-    if len(hkid) >= 8:
-        # For complete HKID (8 characters)
-        main_part = hkid[:7]
-        check_digit = hkid[7]
-        return f"{main_part}({check_digit})"
-    elif len(hkid) == 7:
-        # For HKID without check digit
-        return f"{hkid}()"
+    # Check if this looks like a standard HKID (alphanumeric with specific length)
+    looks_like_hkid = (len(hkid) <= 8 and hkid.replace(' ', '').isalnum())
+    
+    if looks_like_hkid:
+        if len(hkid) >= 8:
+            # For complete HKID (8 characters)
+            main_part = hkid[:7]
+            check_digit = hkid[7]
+            return f"{main_part}({check_digit})"
+        elif len(hkid) == 7:
+            # For HKID without check digit
+            return f"{hkid}()"
+        else:
+            # For partial HKID
+            return f"{hkid}()"
     else:
-        # For partial HKID
-        return f"{hkid}()"
+        # For non-HKID format, just return as is
+        return hkid
 
 def fill_pdf_template(template_path, form_data, language='english'):
     packet = BytesIO()

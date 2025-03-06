@@ -256,7 +256,7 @@
         }
 
         /* Add specific style for Today and No Date buttons */
-        #noDateButton, #todayButton {
+        #noDateButton, #todayButton, #nonHkidButton {
             background-color: #808080;  /* Initial grey color */
         }
 
@@ -299,12 +299,20 @@
                 </div>
 
                 <div class="form-group">
-                    <label for="hkid">HKID:</label>
-                    <div style="display: flex; align-items: center;">
-                        <input type="text" id="hkid" name="hkid" maxlength="7" style="margin-right: 2px;" oninput="formatHKID(this)">
-                        <span>(</span>
-                        <input type="text" id="hkidCheck" name="hkidCheck" maxlength="1" style="width: 20px; margin: 0 2px;" oninput="formatHKIDCheck(this)">
-                        <span>)</span>
+                    <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 5px;">
+                        <label for="hkid">HKID:</label>
+                        <button type="button" class="today-button" id="nonHkidButton" onclick="toggleHkidFormat()">Non-HKID</button>
+                    </div>
+                    <div class="hkid-container" style="width: 100%;">
+                        <div id="hkidStandardFormat" style="display: flex; align-items: center;">
+                            <input type="text" id="hkid" name="hkid" maxlength="7" style="margin-right: 2px; flex: 1;" oninput="formatHKID(this)">
+                            <span>(</span>
+                            <input type="text" id="hkidCheck" name="hkidCheck" maxlength="1" style="width: 20px; margin: 0 2px;" oninput="formatHKIDCheck(this)">
+                            <span>)</span>
+                        </div>
+                        <div id="hkidAlternateFormat" style="display: none;">
+                            <input type="text" id="hkidAlternate" name="hkidAlternate" style="width: 100%;" oninput="formatAlternateID(this)">
+                        </div>
                     </div>
                 </div>
 
@@ -561,6 +569,8 @@
         updateCalendar();
         // Set initial selected date (tomorrow)
         document.getElementById('selectedDate').value = selectedDate.toISOString().split('T')[0];
+        // Ensure Non-HKID button starts with grey color
+        document.getElementById('nonHkidButton').style.backgroundColor = '#808080';
 
         // Handle eye selection buttons
         const eyeButtons = document.querySelectorAll('.eye-button');
@@ -581,7 +591,55 @@
             });
         });
 
-        // Update the form submission handler to handle no-date case
+        // Add isNonHkid variable to track Non-HKID state
+        let isNonHkid = false;
+
+        function toggleHkidFormat() {
+            const standardFormat = document.getElementById('hkidStandardFormat');
+            const alternateFormat = document.getElementById('hkidAlternateFormat');
+            const nonHkidButton = document.getElementById('nonHkidButton');
+            
+            isNonHkid = !isNonHkid;
+            
+            if (isNonHkid) {
+                // Switch to alternate format
+                standardFormat.style.display = 'none';
+                alternateFormat.style.display = 'block';
+                nonHkidButton.style.backgroundColor = '#00b3b3';  // Teal when active
+                
+                // Transfer value from HKID fields to alternate
+                const hkidMain = document.getElementById('hkid').value;
+                const hkidCheck = document.getElementById('hkidCheck').value;
+                document.getElementById('hkidAlternate').value = hkidMain + hkidCheck;
+            } else {
+                // Switch to standard format
+                standardFormat.style.display = 'flex';
+                alternateFormat.style.display = 'none';
+                nonHkidButton.style.backgroundColor = '#808080';  // Grey when inactive
+                
+                // Transfer value from alternate to HKID fields
+                const alternateValue = document.getElementById('hkidAlternate').value;
+                if (alternateValue.length >= 7) {
+                    document.getElementById('hkid').value = alternateValue.substring(0, 7);
+                    if (alternateValue.length > 7) {
+                        document.getElementById('hkidCheck').value = alternateValue.substring(7, 8);
+                    } else {
+                        document.getElementById('hkidCheck').value = '';
+                    }
+                } else {
+                    document.getElementById('hkid').value = alternateValue;
+                    document.getElementById('hkidCheck').value = '';
+                }
+            }
+        }
+
+        function formatAlternateID(input) {
+            // For non-HKID format, just trim whitespace and convert to uppercase
+            let value = input.value.trim().toUpperCase();
+            input.value = value;
+        }
+
+        // Update form submission to handle both HKID formats
         document.getElementById('surgeryForm').addEventListener('submit', function(e) {
             e.preventDefault();
             
@@ -594,13 +652,19 @@
                 return;
             }
             
-            // Get HKID values and combine them
-            const hkidMain = document.getElementById('hkid').value.trim().toUpperCase();
-            const hkidCheck = document.getElementById('hkidCheck').value.trim().toUpperCase();
-            
-            // Create FormData and set combined HKID
+            // Create FormData and set HKID value based on current format
             const formData = new FormData(this);
-            formData.set('hkid', hkidMain + hkidCheck);  // Override the existing HKID value
+            
+            if (isNonHkid) {
+                // Get value from alternate format
+                const alternateValue = document.getElementById('hkidAlternate').value.trim();
+                formData.set('hkid', alternateValue);
+            } else {
+                // Get values from standard format and combine
+                const hkidMain = document.getElementById('hkid').value.trim();
+                const hkidCheck = document.getElementById('hkidCheck').value.trim();
+                formData.set('hkid', hkidMain + hkidCheck);
+            }
             
             const submitButton = e.submitter;
             const action = submitButton.getAttribute('formaction');
@@ -764,6 +828,12 @@
             // Reset HKID fields
             document.getElementById('hkid').value = '';
             document.getElementById('hkidCheck').value = '';
+            document.getElementById('hkidAlternate').value = '';
+            
+            // Reset to standard HKID format if currently in non-HKID mode
+            if (isNonHkid) {
+                toggleHkidFormat();
+            }
         }
 
         function formatHKID(input) {
