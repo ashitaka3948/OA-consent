@@ -138,9 +138,9 @@ FIELD_COORDINATES = {
 
 # Add field coordinates for OT Checklist
 OT_CHECKLIST_COORDINATES = {
-    'doctors': (200, 500),  # Adjust coordinates as needed
-    'date': (300, 600),
-    'patient_name': (150, 550),
+    'doctors': (200, 500),  # These coordinates seem to work
+    'date': (300, 600),     # Try different coordinates for date
+    'patient_name': (150, 550),  # These coordinates seem to work
     'patient_number': (200, 450),
     'hkid': (250, 400),
     'operation': (180, 350)
@@ -160,7 +160,11 @@ def fill_pdf_template(template_path, form_data, language='english'):
     template = PdfReader(open(template_path, 'rb'))
     
     # Fill in the fields (only on first page)
-    field_coordinates = FIELD_COORDINATES.get(language, OT_CHECKLIST_COORDINATES)
+    if 'OT_Checklist.pdf' in template_path:
+        field_coordinates = OT_CHECKLIST_COORDINATES
+    else:
+        field_coordinates = FIELD_COORDINATES[language]
+
     for field, coords in field_coordinates.items():
         if field in form_data:
             can.drawString(coords[0], coords[1], str(form_data[field]))
@@ -332,6 +336,10 @@ def generate_ot_checklist():
         'hkid': request.form.get('hkid', ''),
         'operation': operation_str
     }
+    
+    # Debug print to see what data we're trying to write
+    print("Form Data:", form_data)
+    print("Coordinates:", OT_CHECKLIST_COORDINATES)
     
     pdf_buffer = fill_pdf_template(template_path, form_data)
     return send_file(
