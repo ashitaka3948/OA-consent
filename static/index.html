@@ -256,7 +256,9 @@
         }
 
         /* Add specific style for Today and No Date buttons */
-        #noDateButton, #todayButton, #nonHkidButton {
+        #noDateButton, #todayButton, #nonHkidButton, 
+        #mmcToggle1, #mmcToggle2, #mmcToggle3,
+        #fiveFUToggle1, #fiveFUToggle2, #fiveFUToggle3 {
             background-color: #808080;  /* Initial grey color */
         }
 
@@ -423,6 +425,19 @@
                 <button type="button" class="injection-button" data-cataract="laser_phaco">Laser Phaco</button>
                 <button type="button" class="injection-button" data-cataract="ecce">ECCE</button>
             </div>
+            <div id="glaucomaOptions1" class="injection-options" style="display: none; justify-content: space-between;">
+                <div style="display: flex; gap: 10px;">
+                    <button type="button" class="injection-button" data-glaucoma="trabeculectomy">Trabeculectomy</button>
+                    <button type="button" class="injection-button" data-glaucoma="xen">Xen</button>
+                    <button type="button" class="injection-button" data-glaucoma="istent">iStent</button>
+                    <button type="button" class="injection-button" data-glaucoma="ahmed">Ahmed Valve</button>
+                    <button type="button" class="injection-button" data-glaucoma="needling">Needling</button>
+                </div>
+                <div style="display: flex; gap: 8px;">
+                    <button type="button" class="today-button" id="mmcToggle1" onclick="toggleMMC(1)">+ MMC</button>
+                    <button type="button" class="today-button" id="fiveFUToggle1" onclick="toggle5FU(1)">+ 5FU</button>
+                </div>
+            </div>
             <div id="injectionOptions1" class="injection-options" style="display: none;">
                 <button type="button" class="injection-button" data-injection="vabysmo">Vabysmo</button>
                 <button type="button" class="injection-button" data-injection="eylea">Eylea</button>
@@ -451,6 +466,19 @@
                 <button type="button" class="injection-button" data-cataract="laser_phaco">Laser Phaco</button>
                 <button type="button" class="injection-button" data-cataract="ecce">ECCE</button>
             </div>
+            <div id="glaucomaOptions2" class="injection-options" style="display: none; justify-content: space-between;">
+                <div style="display: flex; gap: 10px;">
+                    <button type="button" class="injection-button" data-glaucoma="trabeculectomy">Trabeculectomy</button>
+                    <button type="button" class="injection-button" data-glaucoma="xen">Xen</button>
+                    <button type="button" class="injection-button" data-glaucoma="istent">iStent</button>
+                    <button type="button" class="injection-button" data-glaucoma="ahmed">Ahmed Valve</button>
+                    <button type="button" class="injection-button" data-glaucoma="needling">Needling</button>
+                </div>
+                <div style="display: flex; gap: 8px;">
+                    <button type="button" class="today-button" id="mmcToggle2" onclick="toggleMMC(2)">+ MMC</button>
+                    <button type="button" class="today-button" id="fiveFUToggle2" onclick="toggle5FU(2)">+ 5FU</button>
+                </div>
+            </div>
             <div id="injectionOptions2" class="injection-options" style="display: none;">
                 <button type="button" class="injection-button" data-injection="vabysmo">Vabysmo</button>
                 <button type="button" class="injection-button" data-injection="eylea">Eylea</button>
@@ -475,6 +503,19 @@
                 <button type="button" class="injection-button selected" data-cataract="phaco">Phaco</button>
                 <button type="button" class="injection-button" data-cataract="laser_phaco">Laser Phaco</button>
                 <button type="button" class="injection-button" data-cataract="ecce">ECCE</button>
+            </div>
+            <div id="glaucomaOptions3" class="injection-options" style="display: none; justify-content: space-between;">
+                <div style="display: flex; gap: 10px;">
+                    <button type="button" class="injection-button" data-glaucoma="trabeculectomy">Trabeculectomy</button>
+                    <button type="button" class="injection-button" data-glaucoma="xen">Xen</button>
+                    <button type="button" class="injection-button" data-glaucoma="istent">iStent</button>
+                    <button type="button" class="injection-button" data-glaucoma="ahmed">Ahmed Valve</button>
+                    <button type="button" class="injection-button" data-glaucoma="needling">Needling</button>
+                </div>
+                <div style="display: flex; gap: 8px;">
+                    <button type="button" class="today-button" id="mmcToggle3" onclick="toggleMMC(3)">+ MMC</button>
+                    <button type="button" class="today-button" id="fiveFUToggle3" onclick="toggle5FU(3)">+ 5FU</button>
+                </div>
             </div>
             <div id="injectionOptions3" class="injection-options" style="display: none;">
                 <button type="button" class="injection-button" data-injection="vabysmo">Vabysmo</button>
@@ -654,7 +695,7 @@
             input.value = value;
         }
 
-        // Update form submission to handle both HKID formats and include injection data
+        // Update form submission to handle both HKID formats and include operation options
         document.getElementById('surgeryForm').addEventListener('submit', function(e) {
             e.preventDefault();
             
@@ -703,6 +744,17 @@
                         formData.append(`cataract_type${i}`, selectedCataract.dataset.cataract);
                     }
                 }
+                
+                // Handle glaucoma types and antimetabolites
+                if (operationSelect.value === 'glaucoma') {
+                    const glaucomaOptions = document.getElementById(`glaucomaOptions${i}`);
+                    const selectedGlaucoma = glaucomaOptions.querySelector('.injection-button.selected');
+                    if (selectedGlaucoma) {
+                        formData.append(`glaucoma_type${i}`, selectedGlaucoma.dataset.glaucoma);
+                    }
+                    formData.append(`use_mmc${i}`, mmcEnabled[i].toString());
+                    formData.append(`use_5fu${i}`, fiveFUEnabled[i].toString());
+                }
             }
             
             const submitButton = e.submitter;
@@ -731,20 +783,142 @@
             });
         });
 
+        // Add MMC and 5FU toggle state variables
+        let mmcEnabled = {
+            1: false,
+            2: false,
+            3: false
+        };
+        
+        let fiveFUEnabled = {
+            1: false,
+            2: false,
+            3: false
+        };
+
+        function toggleMMC(operationNumber) {
+            const mmcButton = document.getElementById(`mmcToggle${operationNumber}`);
+            const fiveFUButton = document.getElementById(`fiveFUToggle${operationNumber}`);
+            
+            // Toggle MMC state
+            mmcEnabled[operationNumber] = !mmcEnabled[operationNumber];
+            
+            // Update MMC button appearance
+            if (mmcEnabled[operationNumber]) {
+                // MMC enabled - turn off 5FU if it's enabled
+                mmcButton.style.backgroundColor = '#00b3b3';  // Teal when active
+                
+                if (fiveFUEnabled[operationNumber]) {
+                    // Turn off 5FU since MMC is now enabled (mutually exclusive)
+                    fiveFUEnabled[operationNumber] = false;
+                    fiveFUButton.style.backgroundColor = '#808080';  // Grey when inactive
+                }
+            } else {
+                // MMC disabled
+                mmcButton.style.backgroundColor = '#808080';  // Grey when inactive
+            }
+        }
+        
+        function toggle5FU(operationNumber) {
+            const fiveFUButton = document.getElementById(`fiveFUToggle${operationNumber}`);
+            const mmcButton = document.getElementById(`mmcToggle${operationNumber}`);
+            
+            // Toggle 5FU state
+            fiveFUEnabled[operationNumber] = !fiveFUEnabled[operationNumber];
+            
+            // Update 5FU button appearance
+            if (fiveFUEnabled[operationNumber]) {
+                // 5FU enabled - turn off MMC if it's enabled
+                fiveFUButton.style.backgroundColor = '#00b3b3';  // Teal when active
+                
+                if (mmcEnabled[operationNumber]) {
+                    // Turn off MMC since 5FU is now enabled (mutually exclusive)
+                    mmcEnabled[operationNumber] = false;
+                    mmcButton.style.backgroundColor = '#808080';  // Grey when inactive
+                }
+            } else {
+                // 5FU disabled
+                fiveFUButton.style.backgroundColor = '#808080';  // Grey when inactive
+            }
+        }
+        
+        // Update the glaucoma procedure button click handler to set default antimetabolites
+        function setDefaultAntimetabolites(operationNumber, glaucomaType) {
+            const mmcButton = document.getElementById(`mmcToggle${operationNumber}`);
+            const fiveFUButton = document.getElementById(`fiveFUToggle${operationNumber}`);
+            
+            // Reset both to inactive first
+            mmcEnabled[operationNumber] = false;
+            fiveFUEnabled[operationNumber] = false;
+            mmcButton.style.backgroundColor = '#808080';
+            fiveFUButton.style.backgroundColor = '#808080';
+            
+            // Apply defaults based on glaucoma type
+            if (glaucomaType === 'trabeculectomy' || glaucomaType === 'xen' || glaucomaType === 'ahmed') {
+                // Default to MMC for these procedures
+                mmcEnabled[operationNumber] = true;
+                mmcButton.style.backgroundColor = '#00b3b3';  // Teal when active
+            } else if (glaucomaType === 'needling') {
+                // Default to 5FU for needling
+                fiveFUEnabled[operationNumber] = true;
+                fiveFUButton.style.backgroundColor = '#00b3b3';  // Teal when active
+            }
+        }
+
+        // Add click handlers for injection and glaucoma buttons
+        document.querySelectorAll('.injection-button').forEach(button => {
+            button.addEventListener('click', function() {
+                // Find the parent options div
+                const parentOptions = this.closest('.injection-options');
+                // Remove selected class from all buttons in this group
+                parentOptions.querySelectorAll('.injection-button').forEach(btn => {
+                    btn.classList.remove('selected');
+                });
+                // Add selected class to clicked button
+                this.classList.add('selected');
+                
+                // Check if this is a glaucoma button and set default antimetabolites
+                if (this.dataset.glaucoma) {
+                    // Extract operation number from parent ID (e.g., "glaucomaOptions1" -> "1")
+                    const operationNumber = parentOptions.id.replace('glaucomaOptions', '');
+                    setDefaultAntimetabolites(operationNumber, this.dataset.glaucoma);
+                }
+            });
+        });
+
         function toggleOperationOptions(operationNumber) {
             const select = document.getElementById(`operation${operationNumber}`);
             const injectionOptions = document.getElementById(`injectionOptions${operationNumber}`);
             const cataractOptions = document.getElementById(`cataractOptions${operationNumber}`);
+            const glaucomaOptions = document.getElementById(`glaucomaOptions${operationNumber}`);
             
             // Hide all options initially
             injectionOptions.style.display = 'none';
             cataractOptions.style.display = 'none';
+            glaucomaOptions.style.display = 'none';
             
             // Show options based on selected operation
             if (select.value === 'injection') {
                 injectionOptions.style.display = 'flex';
             } else if (select.value === 'phaco') {
                 cataractOptions.style.display = 'flex';
+            } else if (select.value === 'glaucoma') {
+                glaucomaOptions.style.display = 'flex';
+                
+                // Reset MMC and 5FU toggle buttons to inactive when showing glaucoma options
+                mmcEnabled[operationNumber] = false;
+                fiveFUEnabled[operationNumber] = false;
+                
+                const mmcButton = document.getElementById(`mmcToggle${operationNumber}`);
+                const fiveFUButton = document.getElementById(`fiveFUToggle${operationNumber}`);
+                
+                if (mmcButton) {
+                    mmcButton.style.backgroundColor = '#808080';  // Grey when inactive
+                }
+                
+                if (fiveFUButton) {
+                    fiveFUButton.style.backgroundColor = '#808080';  // Grey when inactive
+                }
             } else {
                 // Reset selection for options that are not visible
                 injectionOptions.querySelectorAll('.injection-button').forEach(btn => {
@@ -759,23 +933,10 @@
                     document.getElementById('operation3').value = '';
                     document.getElementById('injectionOptions3').style.display = 'none';
                     document.getElementById('cataractOptions3').style.display = 'none';
+                    document.getElementById('glaucomaOptions3').style.display = 'none';
                 }
             }
         }
-
-        // Add click handlers for injection and cataract buttons
-        document.querySelectorAll('.injection-button').forEach(button => {
-            button.addEventListener('click', function() {
-                // Find the parent options div
-                const parentOptions = this.closest('.injection-options');
-                // Remove selected class from all buttons in this group
-                parentOptions.querySelectorAll('.injection-button').forEach(btn => {
-                    btn.classList.remove('selected');
-                });
-                // Add selected class to clicked button
-                this.classList.add('selected');
-            });
-        });
 
         function showOperation2() {
             document.getElementById('operation2Group').style.display = 'flex';
@@ -842,19 +1003,36 @@
             eyeButtons.forEach(btn => btn.classList.remove('selected'));
             selectedEyeInput.value = '';
             
-            // Reset injection options and cataract options
+            // Reset all operation options
             document.querySelectorAll('.injection-options').forEach(div => {
                 div.style.display = 'none';
                 div.querySelectorAll('.injection-button').forEach(btn => {
-                    // Remove selected class from all injection buttons
+                    // Remove selected class from all buttons
                     btn.classList.remove('selected');
                     
-                    // Reselect default Phaco for cataract options
+                    // Reselect default buttons for each type
                     if (btn.dataset.cataract === 'phaco') {
                         btn.classList.add('selected');
                     }
                 });
             });
+            
+            // Reset MMC and 5FU toggle buttons and state
+            for (let i = 1; i <= 3; i++) {
+                mmcEnabled[i] = false;
+                fiveFUEnabled[i] = false;
+                
+                const mmcButton = document.getElementById(`mmcToggle${i}`);
+                const fiveFUButton = document.getElementById(`fiveFUToggle${i}`);
+                
+                if (mmcButton) {
+                    mmcButton.style.backgroundColor = '#808080';
+                }
+                
+                if (fiveFUButton) {
+                    fiveFUButton.style.backgroundColor = '#808080';
+                }
+            }
             
             // Hide operation2 and operation3
             document.getElementById('operation2Group').style.display = 'none';

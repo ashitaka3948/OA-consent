@@ -438,6 +438,39 @@ def generate_ot_checklist():
                     operations.append("ECCE + IOL")
                 else:
                     operations.append("Phaco + IOL")  # Default to Phaco if type not specified
+            elif op == 'glaucoma':
+                # Get glaucoma type if provided
+                glaucoma_type = request.form.get(f'glaucoma_type{i}', '')
+                
+                # If no glaucoma type was selected, just use "Glaucoma"
+                if not glaucoma_type:
+                    operations.append("Glaucoma")
+                    continue
+                    
+                use_mmc = request.form.get(f'use_mmc{i}', 'false').lower() == 'true'
+                use_5fu = request.form.get(f'use_5fu{i}', 'false').lower() == 'true'
+                
+                # Format based on glaucoma type and antimetabolites
+                if glaucoma_type == 'trabeculectomy':
+                    op_name = "Trabeculectomy"
+                elif glaucoma_type == 'xen':
+                    op_name = "Xen"
+                elif glaucoma_type == 'istent':
+                    op_name = "iStent"
+                elif glaucoma_type == 'ahmed':
+                    op_name = "Ahmed Valve"
+                elif glaucoma_type == 'needling':
+                    op_name = "Needling"
+                else:
+                    op_name = "Glaucoma"  # Default if type is unknown
+                
+                # Add antimetabolites if used (only one should be active at a time)
+                if use_mmc:
+                    op_name += " + MMC"
+                elif use_5fu:
+                    op_name += " + 5FU"
+                    
+                operations.append(op_name)
             else:
                 operations.append(op.capitalize())
     
