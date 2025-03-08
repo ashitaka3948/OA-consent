@@ -126,9 +126,10 @@
         /* Add these calendar styles */
         .calendar {
             width: 280px;
+            height: 85%; /* Add height constraint to 85% of original */
             background: white;
             border: 1px solid #ddd;
-            padding: 10px;
+            padding: 8px; /* Reduced from 10px */
             border-radius: 4px;
         }
 
@@ -136,20 +137,21 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 10px;
+            margin-bottom: 5px; /* Reduced from 10px */
         }
 
         .calendar-grid {
             display: grid;
             grid-template-columns: repeat(7, 1fr);
-            gap: 5px;
+            gap: 3px; /* Reduced from 5px */
             text-align: center;
         }
 
         .calendar-day {
-            padding: 5px;
+            padding: 3px; /* Reduced from 5px */
             cursor: pointer;
             border-radius: 4px;
+            font-size: 0.9em; /* Slightly smaller font */
         }
 
         .calendar-day:hover {
@@ -269,7 +271,7 @@
         .doctor-section {
             display: flex;
             gap: 20px;
-            margin-bottom: 30px;
+            margin-bottom: 10px; /* Reduced from 30px */
         }
         
         .doctor-section .form-group {
@@ -425,6 +427,10 @@
                 <button type="button" class="injection-button" data-cataract="laser_phaco">Laser Phaco</button>
                 <button type="button" class="injection-button" data-cataract="ecce">ECCE</button>
             </div>
+            <div id="vitrectomyOptions1" class="injection-options" style="display: none;">
+                <button type="button" class="injection-button selected" data-vitrectomy="non-rd">Non-RD</button>
+                <button type="button" class="injection-button" data-vitrectomy="rd">RD</button>
+            </div>
             <div id="glaucomaOptions1" class="injection-options" style="display: none; justify-content: space-between;">
                 <div style="display: flex; gap: 10px;">
                     <button type="button" class="injection-button" data-glaucoma="trabeculectomy">Trabeculectomy</button>
@@ -466,6 +472,10 @@
                 <button type="button" class="injection-button" data-cataract="laser_phaco">Laser Phaco</button>
                 <button type="button" class="injection-button" data-cataract="ecce">ECCE</button>
             </div>
+            <div id="vitrectomyOptions2" class="injection-options" style="display: none;">
+                <button type="button" class="injection-button selected" data-vitrectomy="non-rd">Non-RD</button>
+                <button type="button" class="injection-button" data-vitrectomy="rd">RD</button>
+            </div>
             <div id="glaucomaOptions2" class="injection-options" style="display: none; justify-content: space-between;">
                 <div style="display: flex; gap: 10px;">
                     <button type="button" class="injection-button" data-glaucoma="trabeculectomy">Trabeculectomy</button>
@@ -503,6 +513,10 @@
                 <button type="button" class="injection-button selected" data-cataract="phaco">Phaco</button>
                 <button type="button" class="injection-button" data-cataract="laser_phaco">Laser Phaco</button>
                 <button type="button" class="injection-button" data-cataract="ecce">ECCE</button>
+            </div>
+            <div id="vitrectomyOptions3" class="injection-options" style="display: none;">
+                <button type="button" class="injection-button selected" data-vitrectomy="non-rd">Non-RD</button>
+                <button type="button" class="injection-button" data-vitrectomy="rd">RD</button>
             </div>
             <div id="glaucomaOptions3" class="injection-options" style="display: none; justify-content: space-between;">
                 <div style="display: flex; gap: 10px;">
@@ -745,6 +759,15 @@
                     }
                 }
                 
+                // Handle vitrectomy types
+                if (operationSelect.value === 'vitrectomy') {
+                    const vitrectomyOptions = document.getElementById(`vitrectomyOptions${i}`);
+                    const selectedVitrectomy = vitrectomyOptions.querySelector('.injection-button.selected');
+                    if (selectedVitrectomy) {
+                        formData.append(`vitrectomy_type${i}`, selectedVitrectomy.dataset.vitrectomy);
+                    }
+                }
+                
                 // Handle glaucoma types and antimetabolites
                 if (operationSelect.value === 'glaucoma') {
                     const glaucomaOptions = document.getElementById(`glaucomaOptions${i}`);
@@ -890,11 +913,13 @@
             const select = document.getElementById(`operation${operationNumber}`);
             const injectionOptions = document.getElementById(`injectionOptions${operationNumber}`);
             const cataractOptions = document.getElementById(`cataractOptions${operationNumber}`);
+            const vitrectomyOptions = document.getElementById(`vitrectomyOptions${operationNumber}`);
             const glaucomaOptions = document.getElementById(`glaucomaOptions${operationNumber}`);
             
             // Hide all options initially
             injectionOptions.style.display = 'none';
             cataractOptions.style.display = 'none';
+            vitrectomyOptions.style.display = 'none';
             glaucomaOptions.style.display = 'none';
             
             // Show options based on selected operation
@@ -902,6 +927,8 @@
                 injectionOptions.style.display = 'flex';
             } else if (select.value === 'phaco') {
                 cataractOptions.style.display = 'flex';
+            } else if (select.value === 'vitrectomy') {
+                vitrectomyOptions.style.display = 'flex';
             } else if (select.value === 'glaucoma') {
                 glaucomaOptions.style.display = 'flex';
                 
@@ -933,6 +960,7 @@
                     document.getElementById('operation3').value = '';
                     document.getElementById('injectionOptions3').style.display = 'none';
                     document.getElementById('cataractOptions3').style.display = 'none';
+                    document.getElementById('vitrectomyOptions3').style.display = 'none';
                     document.getElementById('glaucomaOptions3').style.display = 'none';
                 }
             }
