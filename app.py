@@ -272,10 +272,23 @@ def generate_english_consent():
             print(f"Error formatting HKID: {e}")
             formatted_hkid = "()"
         
+        # Handle eye selection for English consent
+        eye_selection = request.form.get('selectedEye', '')
+        
+        # Handle special formatting for injection in English consent
+        custom_eye = eye_selection
+        if operation == 'injection':
+            # Get injection drug name
+            drug = request.form.get('injection_drug1', '')
+            if drug:
+                drug_name = drug.capitalize()
+                # Format as "eye selection + intravitreal injection of drug"
+                custom_eye = f"{eye_selection} intravitreal injection of {drug_name}"
+        
         form_data = {
             'patient_name': request.form.get('patientName', ''),
             'patient_id': formatted_hkid,
-            'eye': request.form.get('selectedEye', ''),
+            'eye': custom_eye,
             'doctors': doctors,
             'doctors2': doctors,
             'operation_date': formatted_date,
@@ -340,6 +353,16 @@ def generate_chinese_consent():
             'both eyes': '雙'
         }.get(eye_selection, '')
         
+        # Handle special formatting for injection in Chinese consent
+        custom_eye = eye_in_chinese
+        if operation == 'injection':
+            # Get injection drug name
+            drug = request.form.get('injection_drug1', '')
+            if drug:
+                drug_name = drug.capitalize()
+                # Add the drug name after the Chinese term for intravitreal injection
+                custom_eye = f"{eye_in_chinese}眼球內注射{drug_name}"
+        
         # Get HKID from form data and format it
         try:
             hkid = request.form.get('hkid', '').strip()
@@ -351,7 +374,7 @@ def generate_chinese_consent():
         form_data = {
             'patient_name': request.form.get('patientName', ''),
             'patient_id': formatted_hkid,  # Use formatted HKID here
-            'eye': eye_in_chinese,
+            'eye': custom_eye,
             'doctors': doctors,
             'doctors2': doctors,
             'operation_date': formatted_date,
@@ -396,11 +419,31 @@ def generate_ot_checklist():
     for i in range(1, 4):  # Check all 3 operation fields
         op = request.form.get(f'operation{i}')
         if op:
-            operations.append(op.capitalize())
+            if op == 'injection':
+                # Get injection drug name if provided
+                drug = request.form.get(f'injection_drug{i}', '')
+                if drug:
+                    drug_name = drug.capitalize()
+                    operations.append(f"Intravitreal injection of {drug_name}")
+                else:
+                    operations.append("Intravitreal injection")
+            elif op == 'phaco':
+                # Get cataract type if provided
+                cataract_type = request.form.get(f'cataract_type{i}', 'phaco')
+                if cataract_type == 'phaco':
+                    operations.append("Phaco + IOL")
+                elif cataract_type == 'laser_phaco':
+                    operations.append("Laser Phaco + IOL")
+                elif cataract_type == 'ecce':
+                    operations.append("ECCE + IOL")
+                else:
+                    operations.append("Phaco + IOL")  # Default to Phaco if type not specified
+            else:
+                operations.append(op.capitalize())
     
     # Format operation string with eye selection
     eye_selection = request.form.get('selectedEye', '')
-    operation_str = f"{eye_selection.capitalize()}   {' + '.join(operations)}"
+    operation_str = f"{eye_selection.capitalize()} {' + '.join(operations)}"
     
     # Format date
     operation_date = request.form.get('selectedDate')
