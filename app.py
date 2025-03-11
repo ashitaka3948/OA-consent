@@ -430,14 +430,22 @@ def generate_ot_checklist():
             elif op == 'phaco':
                 # Get cataract type if provided
                 cataract_type = request.form.get(f'cataract_type{i}', 'phaco')
+                use_av = request.form.get(f'use_av{i}', 'false').lower() == 'true'
+                
                 if cataract_type == 'phaco':
-                    operations.append("Phaco + IOL")
+                    op_name = "Phaco + IOL"
                 elif cataract_type == 'laser_phaco':
-                    operations.append("Laser Phaco + IOL")
+                    op_name = "Laser Phaco + IOL"
                 elif cataract_type == 'ecce':
-                    operations.append("ECCE + IOL")
+                    op_name = "ECCE + IOL"
                 else:
-                    operations.append("Phaco + IOL")  # Default to Phaco if type not specified
+                    op_name = "Phaco + IOL"  # Default to Phaco if type not specified
+                
+                # Add AV indication if enabled
+                if use_av:
+                    op_name += " ± AV"
+                    
+                operations.append(op_name)
             elif op == 'glaucoma':
                 # Get glaucoma type if provided
                 glaucoma_type = request.form.get(f'glaucoma_type{i}', '')
