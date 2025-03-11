@@ -421,6 +421,7 @@
                 <option value="glaucoma">Glaucoma</option>
                 <option value="sfiol">SFIOL</option>
                 <option value="injection">Intravitreal injection</option>
+                <option value="pterygium">Pterygium</option>
             </select>
             <div id="cataractOptions1" class="injection-options" style="display: none; justify-content: space-between;">
                 <div style="display: flex; gap: 10px;">
@@ -457,6 +458,18 @@
                 <button type="button" class="injection-button" data-injection="beovu">Beovu</button>
                 <button type="button" class="injection-button" data-injection="ozurdex">Ozurdex</button>
             </div>
+            
+            <!-- Add new Pterygium options for each operation -->
+            <div id="pterygiumOptions1" class="injection-options" style="display: none; justify-content: space-between;">
+                <div style="display: flex; gap: 10px;">
+                    <button type="button" class="injection-button selected" data-pterygium="autograft">Autograft</button>
+                    <button type="button" class="injection-button" data-pterygium="no-autograft">No autograft</button>
+                </div>
+                <div style="display: flex; gap: 8px;">
+                    <button type="button" class="today-button" id="glueToggle1" onclick="toggleGlue(1)">+Glue</button>
+                    <button type="button" class="today-button" id="pterygiumMmcToggle1" onclick="togglePterygiumMmc(1)">+MMC</button>
+                </div>
+            </div>
         </div>
 
         <div class="form-group" id="operation2Group">
@@ -471,6 +484,7 @@
                 <option value="glaucoma">Glaucoma</option>
                 <option value="sfiol">SFIOL</option>
                 <option value="injection">Intravitreal injection</option>
+                <option value="pterygium">Pterygium</option>
             </select>
             <div id="cataractOptions2" class="injection-options" style="display: none; justify-content: space-between;">
                 <div style="display: flex; gap: 10px;">
@@ -507,6 +521,18 @@
                 <button type="button" class="injection-button" data-injection="beovu">Beovu</button>
                 <button type="button" class="injection-button" data-injection="ozurdex">Ozurdex</button>
             </div>
+            
+            <!-- Add new Pterygium options for each operation -->
+            <div id="pterygiumOptions2" class="injection-options" style="display: none; justify-content: space-between;">
+                <div style="display: flex; gap: 10px;">
+                    <button type="button" class="injection-button selected" data-pterygium="autograft">Autograft</button>
+                    <button type="button" class="injection-button" data-pterygium="no-autograft">No autograft</button>
+                </div>
+                <div style="display: flex; gap: 8px;">
+                    <button type="button" class="today-button" id="glueToggle2" onclick="toggleGlue(2)">+Glue</button>
+                    <button type="button" class="today-button" id="pterygiumMmcToggle2" onclick="togglePterygiumMmc(2)">+MMC</button>
+                </div>
+            </div>
         </div>
 
         <div class="form-group" id="operation3Group">
@@ -518,6 +544,7 @@
                 <option value="glaucoma">Glaucoma</option>
                 <option value="sfiol">SFIOL</option>
                 <option value="injection">Intravitreal injection</option>
+                <option value="pterygium">Pterygium</option>
             </select>
             <div id="cataractOptions3" class="injection-options" style="display: none; justify-content: space-between;">
                 <div style="display: flex; gap: 10px;">
@@ -553,6 +580,18 @@
                 <button type="button" class="injection-button" data-injection="lucentis">Lucentis</button>
                 <button type="button" class="injection-button" data-injection="beovu">Beovu</button>
                 <button type="button" class="injection-button" data-injection="ozurdex">Ozurdex</button>
+            </div>
+            
+            <!-- Add new Pterygium options for each operation -->
+            <div id="pterygiumOptions3" class="injection-options" style="display: none; justify-content: space-between;">
+                <div style="display: flex; gap: 10px;">
+                    <button type="button" class="injection-button selected" data-pterygium="autograft">Autograft</button>
+                    <button type="button" class="injection-button" data-pterygium="no-autograft">No autograft</button>
+                </div>
+                <div style="display: flex; gap: 8px;">
+                    <button type="button" class="today-button" id="glueToggle3" onclick="toggleGlue(3)">+Glue</button>
+                    <button type="button" class="today-button" id="pterygiumMmcToggle3" onclick="togglePterygiumMmc(3)">+MMC</button>
+                </div>
             </div>
         </div>
 
@@ -795,6 +834,18 @@
                     formData.append(`use_mmc${i}`, mmcEnabled[i].toString());
                     formData.append(`use_5fu${i}`, fiveFUEnabled[i].toString());
                 }
+                
+                // Handle pterygium options
+                if (operationSelect.value === 'pterygium') {
+                    const pterygiumOptions = document.getElementById(`pterygiumOptions${i}`);
+                    const selectedPterygium = pterygiumOptions.querySelector('.injection-button.selected');
+                    if (selectedPterygium) {
+                        formData.append(`pterygium_type${i}`, selectedPterygium.dataset.pterygium);
+                    }
+                    // Add glue and MMC state for pterygium operations
+                    formData.append(`use_glue${i}`, glueEnabled[i].toString());
+                    formData.append(`use_pterygium_mmc${i}`, pterygiumMmcEnabled[i].toString());
+                }
             }
             
             const submitButton = e.submitter;
@@ -932,12 +983,14 @@
             const cataractOptions = document.getElementById(`cataractOptions${operationNumber}`);
             const vitrectomyOptions = document.getElementById(`vitrectomyOptions${operationNumber}`);
             const glaucomaOptions = document.getElementById(`glaucomaOptions${operationNumber}`);
+            const pterygiumOptions = document.getElementById(`pterygiumOptions${operationNumber}`);
             
             // Hide all options initially
             injectionOptions.style.display = 'none';
             cataractOptions.style.display = 'none';
             vitrectomyOptions.style.display = 'none';
             glaucomaOptions.style.display = 'none';
+            pterygiumOptions.style.display = 'none';
             
             // Show options based on selected operation
             if (select.value === 'injection') {
@@ -963,6 +1016,23 @@
                 if (fiveFUButton) {
                     fiveFUButton.style.backgroundColor = '#808080';  // Grey when inactive
                 }
+            } else if (select.value === 'pterygium') {
+                pterygiumOptions.style.display = 'flex';
+                
+                // Reset Glue and MMC toggle buttons to inactive when showing pterygium options
+                glueEnabled[operationNumber] = false;
+                pterygiumMmcEnabled[operationNumber] = false;
+                
+                const glueButton = document.getElementById(`glueToggle${operationNumber}`);
+                const pterygiumMmcButton = document.getElementById(`pterygiumMmcToggle${operationNumber}`);
+                
+                if (glueButton) {
+                    glueButton.style.backgroundColor = '#808080';  // Grey when inactive
+                }
+                
+                if (pterygiumMmcButton) {
+                    pterygiumMmcButton.style.backgroundColor = '#808080';  // Grey when inactive
+                }
             } else {
                 // Reset selection for options that are not visible
                 injectionOptions.querySelectorAll('.injection-button').forEach(btn => {
@@ -979,6 +1049,7 @@
                     document.getElementById('cataractOptions3').style.display = 'none';
                     document.getElementById('vitrectomyOptions3').style.display = 'none';
                     document.getElementById('glaucomaOptions3').style.display = 'none';
+                    document.getElementById('pterygiumOptions3').style.display = 'none';
                 }
             }
         }
@@ -1062,15 +1133,19 @@
                 });
             });
             
-            // Reset MMC and 5FU toggle buttons and state
+            // Reset MMC, 5FU, AV, and pterygium toggle buttons and state
             for (let i = 1; i <= 3; i++) {
                 mmcEnabled[i] = false;
                 fiveFUEnabled[i] = false;
                 avEnabled[i] = false;
+                glueEnabled[i] = false;
+                pterygiumMmcEnabled[i] = false;
                 
                 const mmcButton = document.getElementById(`mmcToggle${i}`);
                 const fiveFUButton = document.getElementById(`fiveFUToggle${i}`);
                 const avButton = document.getElementById(`avToggle${i}`);
+                const glueButton = document.getElementById(`glueToggle${i}`);
+                const pterygiumMmcButton = document.getElementById(`pterygiumMmcToggle${i}`);
                 
                 if (mmcButton) {
                     mmcButton.style.backgroundColor = '#808080';
@@ -1082,6 +1157,14 @@
                 
                 if (avButton) {
                     avButton.style.backgroundColor = '#808080';
+                }
+                
+                if (glueButton) {
+                    glueButton.style.backgroundColor = '#808080';
+                }
+                
+                if (pterygiumMmcButton) {
+                    pterygiumMmcButton.style.backgroundColor = '#808080';
                 }
             }
             
@@ -1177,6 +1260,61 @@
             const avButton = document.getElementById(`avToggle${i}`);
             if (avButton) {
                 avButton.style.backgroundColor = '#808080';
+            }
+        }
+        
+        // Add state variables for Pterygium options
+        let glueEnabled = {
+            1: false,
+            2: false,
+            3: false
+        };
+        
+        let pterygiumMmcEnabled = {
+            1: false,
+            2: false,
+            3: false
+        };
+        
+        function toggleGlue(operationNumber) {
+            const glueButton = document.getElementById(`glueToggle${operationNumber}`);
+            
+            // Toggle glue state
+            glueEnabled[operationNumber] = !glueEnabled[operationNumber];
+            
+            // Update button appearance
+            if (glueEnabled[operationNumber]) {
+                glueButton.style.backgroundColor = '#00b3b3';  // Teal when active
+            } else {
+                glueButton.style.backgroundColor = '#808080';  // Grey when inactive
+            }
+        }
+        
+        function togglePterygiumMmc(operationNumber) {
+            const mmcButton = document.getElementById(`pterygiumMmcToggle${operationNumber}`);
+            
+            // Toggle MMC state
+            pterygiumMmcEnabled[operationNumber] = !pterygiumMmcEnabled[operationNumber];
+            
+            // Update button appearance
+            if (pterygiumMmcEnabled[operationNumber]) {
+                mmcButton.style.backgroundColor = '#00b3b3';  // Teal when active
+            } else {
+                mmcButton.style.backgroundColor = '#808080';  // Grey when inactive
+            }
+        }
+        
+        // Initialize Pterygium buttons to grey on page load
+        for (let i = 1; i <= 3; i++) {
+            const glueButton = document.getElementById(`glueToggle${i}`);
+            const pterygiumMmcButton = document.getElementById(`pterygiumMmcToggle${i}`);
+            
+            if (glueButton) {
+                glueButton.style.backgroundColor = '#808080';
+            }
+            
+            if (pterygiumMmcButton) {
+                pterygiumMmcButton.style.backgroundColor = '#808080';
             }
         }
     </script>

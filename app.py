@@ -284,6 +284,14 @@ def generate_english_consent():
                 drug_name = drug.capitalize()
                 # Format as "eye selection + intravitreal injection of drug"
                 custom_eye = f"{eye_selection} intravitreal injection of {drug_name}"
+        elif operation == 'pterygium':
+            # Get pterygium type
+            pterygium_type = request.form.get('pterygium_type1', 'autograft')
+            
+            if pterygium_type == 'autograft':
+                custom_eye = f"{eye_selection} pterygium excision + conjunctival autograft"
+            else:
+                custom_eye = f"{eye_selection} pterygium excision"
         
         form_data = {
             'patient_name': request.form.get('patientName', ''),
@@ -445,6 +453,23 @@ def generate_ot_checklist():
                 if use_av:
                     op_name += " ± AV"
                     
+                operations.append(op_name)
+            elif op == 'pterygium':
+                # For OT checklist, start with base name
+                op_name = "Pterygium excision"
+                
+                # Get additional options if provided
+                use_glue = request.form.get(f'use_glue{i}', 'false').lower() == 'true'
+                use_mmc = request.form.get(f'use_pterygium_mmc{i}', 'false').lower() == 'true'
+                
+                # Add glue if enabled
+                if use_glue:
+                    op_name += " + Glue"
+                
+                # Add MMC if enabled
+                if use_mmc:
+                    op_name += " + MMC"
+                
                 operations.append(op_name)
             elif op == 'glaucoma':
                 # Get glaucoma type if provided
