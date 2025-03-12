@@ -287,6 +287,31 @@
         #operation1Group {
             margin-top: 20px;
         }
+
+        /* Add these new styles for inline doctor selection */
+        .doctor-inline {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .doctor-inline label {
+            white-space: nowrap;
+            margin-bottom: 0;
+        }
+        
+        .doctor-inline select {
+            flex: 1;
+        }
+        
+        /* Reduce vertical spacing between doctor and operation sections */
+        .doctor-section {
+            margin-bottom: 5px;
+        }
+        
+        #operation1Group {
+            margin-top: 10px;
+        }
     </style>
 </head>
 <body>
@@ -361,51 +386,55 @@
 
         <div class="doctor-section">
             <div class="form-group">
-                <label for="doctor1">Primary Doctor:</label>
-                <select id="doctor1" name="doctor1">
-                    <option value="">Select Primary Doctor</option>
-                    <option value="andrew_fok">Andrew Fok</option>
-                    <option value="carol_yu">Carol Yu</option>
-                    <option value="charmaine_hon">Charmaine Hon</option>
-                    <option value="leslie_cheng">Cheng Ka Lok</option>
-                    <option value="cheung_sek_hong">Cheung Sek Hong</option>
-                    <option value="jean_paul_yih">Jean Paul Yih</option>
-                    <option value="callie_ko">Ko Ka Li</option>
-                    <option value="isabel_lai">Lai Sum Wai</option>
-                    <option value="douglas_lam">Lam King Tak</option>
-                    <option value="winnie_lau">Lau Wai Ying</option>
-                    <option value="gary_lee">Lee Ka Yau</option>
-                    <option value="alex_ng">Ng Lap Ki</option>
-                    <option value="shiu_chi_yuen">Shiu Chi Yuen</option>
-                    <option value="patrick_tong">Tong Pak Chuen</option>
-                    <option value="donald_woo">Woo Chai Fong</option>
-                    <option value="victor_woo">Woo Chi Pang</option>
-                    <option value="nancy_yuen">Yuen Shi Yin</option>
-                </select>
-        </div>
+                <div class="doctor-inline">
+                    <label for="doctor1">Primary Doctor:</label>
+                    <select id="doctor1" name="doctor1">
+                        <option value="">Select Primary Doctor</option>
+                        <option value="andrew_fok">Andrew Fok</option>
+                        <option value="carol_yu">Carol Yu</option>
+                        <option value="charmaine_hon">Charmaine Hon</option>
+                        <option value="leslie_cheng">Cheng Ka Lok</option>
+                        <option value="cheung_sek_hong">Cheung Sek Hong</option>
+                        <option value="jean_paul_yih">Jean Paul Yih</option>
+                        <option value="callie_ko">Ko Ka Li</option>
+                        <option value="isabel_lai">Lai Sum Wai</option>
+                        <option value="douglas_lam">Lam King Tak</option>
+                        <option value="winnie_lau">Lau Wai Ying</option>
+                        <option value="gary_lee">Lee Ka Yau</option>
+                        <option value="alex_ng">Ng Lap Ki</option>
+                        <option value="shiu_chi_yuen">Shiu Chi Yuen</option>
+                        <option value="patrick_tong">Tong Pak Chuen</option>
+                        <option value="donald_woo">Woo Chai Fong</option>
+                        <option value="victor_woo">Woo Chi Pang</option>
+                        <option value="nancy_yuen">Yuen Shi Yin</option>
+                    </select>
+                </div>
+            </div>
 
-        <div class="form-group">
-                <label for="doctor2">Second Doctor:</label>
-                <select id="doctor2" name="doctor2">
-                    <option value="">Select Second Doctor</option>
-                    <option value="andrew_fok">Andrew Fok</option>
-                    <option value="carol_yu">Carol Yu</option>
-                    <option value="charmaine_hon">Charmaine Hon</option>
-                    <option value="leslie_cheng">Cheng Ka Lok</option>
-                    <option value="cheung_sek_hong">Cheung Sek Hong</option>
-                    <option value="jean_paul_yih">Jean Paul Yih</option>
-                    <option value="callie_ko">Ko Ka Li</option>
-                    <option value="isabel_lai">Lai Sum Wai</option>
-                    <option value="douglas_lam">Lam King Tak</option>
-                    <option value="winnie_lau">Lau Wai Ying</option>
-                    <option value="gary_lee">Lee Ka Yau</option>
-                    <option value="alex_ng">Ng Lap Ki</option>
-                    <option value="shiu_chi_yuen">Shiu Chi Yuen</option>
-                    <option value="patrick_tong">Tong Pak Chuen</option>
-                    <option value="donald_woo">Woo Chai Fong</option>
-                    <option value="victor_woo">Woo Chi Pang</option>
-                    <option value="nancy_yuen">Yuen Shi Yin</option>
-                </select>
+            <div class="form-group">
+                <div class="doctor-inline">
+                    <label for="doctor2">Second Doctor:</label>
+                    <select id="doctor2" name="doctor2">
+                        <option value="">Select Second Doctor</option>
+                        <option value="andrew_fok">Andrew Fok</option>
+                        <option value="carol_yu">Carol Yu</option>
+                        <option value="charmaine_hon">Charmaine Hon</option>
+                        <option value="leslie_cheng">Cheng Ka Lok</option>
+                        <option value="cheung_sek_hong">Cheung Sek Hong</option>
+                        <option value="jean_paul_yih">Jean Paul Yih</option>
+                        <option value="callie_ko">Ko Ka Li</option>
+                        <option value="isabel_lai">Lai Sum Wai</option>
+                        <option value="douglas_lam">Lam King Tak</option>
+                        <option value="winnie_lau">Lau Wai Ying</option>
+                        <option value="gary_lee">Lee Ka Yau</option>
+                        <option value="alex_ng">Ng Lap Ki</option>
+                        <option value="shiu_chi_yuen">Shiu Chi Yuen</option>
+                        <option value="patrick_tong">Tong Pak Chuen</option>
+                        <option value="donald_woo">Woo Chai Fong</option>
+                        <option value="victor_woo">Woo Chi Pang</option>
+                        <option value="nancy_yuen">Yuen Shi Yin</option>
+                    </select>
+                </div>
             </div>
         </div>
 
@@ -422,6 +451,8 @@
                 <option value="sfiol">SFIOL</option>
                 <option value="injection">Intravitreal injection</option>
                 <option value="pterygium">Pterygium</option>
+                <option value="corneal_transplant">Corneal transplant</option>
+                <option value="icl">ICL</option>
             </select>
             <div id="cataractOptions1" class="injection-options" style="display: none; justify-content: space-between;">
                 <div style="display: flex; gap: 10px;">
@@ -485,6 +516,8 @@
                 <option value="sfiol">SFIOL</option>
                 <option value="injection">Intravitreal injection</option>
                 <option value="pterygium">Pterygium</option>
+                <option value="corneal_transplant">Corneal transplant</option>
+                <option value="icl">ICL</option>
             </select>
             <div id="cataractOptions2" class="injection-options" style="display: none; justify-content: space-between;">
                 <div style="display: flex; gap: 10px;">
@@ -545,6 +578,8 @@
                 <option value="sfiol">SFIOL</option>
                 <option value="injection">Intravitreal injection</option>
                 <option value="pterygium">Pterygium</option>
+                <option value="corneal_transplant">Corneal transplant</option>
+                <option value="icl">ICL</option>
             </select>
             <div id="cataractOptions3" class="injection-options" style="display: none; justify-content: space-between;">
                 <div style="display: flex; gap: 10px;">

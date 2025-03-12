@@ -35,6 +35,18 @@ TEMPLATES = {
         'english': 'templates/injection_consent_en.pdf',
         'chinese': 'templates/injection_consent_cn.pdf'
     },
+    'pterygium': {
+        'english': 'templates/pterygium_consent_en.pdf',
+        'chinese': 'templates/pterygium_consent_cn.pdf'
+    },
+    'corneal_transplant': {
+        'english': 'templates/corneal_transplant_consent_en.pdf',
+        'chinese': 'templates/corneal_transplant_consent_cn.pdf'
+    },
+    'icl': {
+        'english': 'templates/icl_consent_en.pdf',
+        'chinese': 'templates/icl_consent_cn.pdf'
+    },
     'ot_checklist': {
         'template': 'templates/OT_Checklist.pdf'
     }
